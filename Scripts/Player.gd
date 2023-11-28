@@ -1,4 +1,4 @@
-### Player.gd
+### Playerge.gd
 
 extends CharacterBody2D
 
@@ -17,7 +17,7 @@ func _physics_process(delta):
 	velocity.y += gravity * delta
 	# horizontal movement processing (left, right)
 	horizontal_movement()
-	
+
 	#applies movement
 	move_and_slide() 
 	
@@ -32,9 +32,6 @@ func horizontal_movement():
 
 #animations
 func player_animations():
-	if velocity.y == 0:
-		$AnimatedSprite2D.play("default")
-	#on left (add is_action_just_released so you continue running after jumping)
 	if Input.is_action_pressed("ui_left") || Input.is_action_just_released("ui_jump"):
 		$AnimatedSprite2D.flip_h = true
 		$AnimatedSprite2D.play("run")
