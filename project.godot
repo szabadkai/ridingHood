@@ -38,4 +38,4 @@ ui_attack={
 
 [rendering]
 
-environment/defaults/default_clear_color=Color(0, 0, 0, 1)
+environment/defaults/default_clear_color=Color(0.00784314, 0.0235294, 0.0509804, 1)
