@@ -17,11 +17,9 @@ func _physics_process(delta):
 	velocity.y += gravity * delta
 	# horizontal movement processing (left, right)
 	horizontal_movement()
-
-	#applies movement
-	move_and_slide() 
-	
 	player_animations()   
+	move_and_slide()
+		
 		
 #horizontal movement calculation
 func horizontal_movement():
@@ -40,7 +38,7 @@ func player_animations():
 		$AnimatedSprite2D.flip_h = false
 		$AnimatedSprite2D.play("run")
 	
-	if !Input.is_anything_pressed():
+	if !Input.is_anything_pressed() and velocity.y == 0:
 		$AnimatedSprite2D.play("default")
 		
 	if velocity.y < 0:
@@ -57,14 +55,7 @@ func _input(event):
 	if event.is_action_pressed("ui_attack"):
 		is_attacking = true
 
-
 	#on jump
 	if event.is_action_pressed("ui_jump") and is_on_floor():
 		velocity.y = jump_height
 	
-
-#reset our animation variables
-func _on_animated_sprite_2d_animation_finished():
-	is_attacking = false
-	is_climbing = false	
-

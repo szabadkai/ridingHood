@@ -1,8 +1,13 @@
-[gd_scene load_steps=6 format=3 uid="uid://bnngwksvevi1g"]
+[gd_scene load_steps=11 format=3 uid="uid://bnngwksvevi1g"]
 
+[ext_resource type="Script" path="res://Scripts/Main.gd" id="1_75ln0"]
 [ext_resource type="PackedScene" uid="uid://bmoh5fh08pnhu" path="res://Scenes/Player.tscn" id="1_ilq7n"]
-[ext_resource type="Script" path="res://Scenes/Main.gd" id="1_nyjc2"]
 [ext_resource type="Texture2D" uid="uid://dylwi5kluvhd6" path="res://Assets/tiles.png" id="2_bafmq"]
+[ext_resource type="Texture2D" uid="uid://cvsn2kixrb0hc" path="res://Assets/cards/tile027.png" id="5_7kc56"]
+[ext_resource type="Texture2D" uid="uid://cntkbl4cvluqj" path="res://Assets/cards/tile000.png" id="5_l1ke6"]
+[ext_resource type="Texture2D" uid="uid://1aqd77cab4vp" path="res://Assets/cards/tile031.png" id="6_l3ln2"]
+[ext_resource type="Texture2D" uid="uid://q35wwqiyvc5r" path="res://Assets/cards/tile018.png" id="7_gcjlr"]
+[ext_resource type="Texture2D" uid="uid://0511h0k1qaxa" path="res://Assets/cards/tile033.png" id="8_hm4eo"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o3vai"]
 texture = ExtResource("2_bafmq")
@@ -271,11 +276,13 @@ terrain_set_0/terrain_1/color = Color(1, 1, 1, 1)
 sources/6 = SubResource("TileSetAtlasSource_o3vai")
 
 [node name="Main" type="Node2D"]
-script = ExtResource("1_nyjc2")
+script = ExtResource("1_75ln0")
+
+[node name="Deck" type="Node" parent="."]
 
 [node name="Player" parent="." instance=ExtResource("1_ilq7n")]
 position = Vector2(117, 74)
-speed = 120
+speed = 100
 gravity = 750
 jump_height = -240
 
@@ -294,3 +301,60 @@ texture_filter = 1
 tile_set = SubResource("TileSet_q4ek2")
 format = 2
 layer_0/tile_data = PackedInt32Array(589824, 65542, 1, 589825, 131078, 1, 589826, 131078, 1, 589827, 131078, 1, 589828, 196614, 1, 589831, 131078, 1, 589832, 131078, 1, 589833, 131078, 1, 589834, 131078, 1, 589835, 131078, 1, 589836, 131078, 1, 589837, 131078, 1, 589838, 131078, 1, 589839, 131078, 1, 589840, 131078, 1, 589841, 131078, 1, 589842, 131078, 1, 589843, 196614, 1, 655364, 196614, 2, 655360, 65542, 2, 655361, 131078, 2, 655362, 131078, 2, 655363, 131078, 2, 589830, 65542, 1, 458763, 65542, 1, 458764, 131078, 1, 458765, 131078, 1, 458766, 196614, 1, 524299, 65542, 2, 524300, 131078, 2, 524301, 131078, 2, 524302, 196614, 2, 655379, 196614, 2, 655378, 131078, 2, 655377, 131078, 2, 655376, 131078, 2, 655375, 131078, 2, 655374, 131078, 2, 655373, 131078, 2, 655372, 131078, 2, 655371, 131078, 2, 655370, 131078, 2, 655369, 131078, 2, 655368, 131078, 2, 655367, 131078, 2, 655366, 65542, 2, 327696, 720902, 1, 327697, 786438, 1, 131082, 917510, 1, 393217, 1179654, 1, 458753, 1179654, 2, 524289, 1179654, 3, 393218, 1245190, 1, 393219, 1310726, 1, 458755, 1310726, 2, 393220, 1376262, 1, 458756, 1376262, 2, 524292, 1376262, 3, 589851, 196614, 1, 589850, 65542, 1, 589847, 131078, 1, 589848, 196614, 1, 589846, 131078, 1, 589845, 65542, 1, 655381, 65542, 2, 655382, 131078, 2, 655383, 131078, 2, 655384, 196614, 2, 655386, 65542, 3, 655387, 196614, 2, 327707, 458758, 1, 393240, 458758, 1, 458773, 458758, 1, 262174, 458758, 1, 393237, 1572870, 2, 262171, 1572870, 2, 327681, 1310726, 3, 327683, 1769478, 3, 262145, 1179654, 1, 262147, 1376262, 1, 262146, 1310726, 1, 327682, 1703942, 3, 196609, 1572870, 2, 196610, 1572870, 2, 196611, 1572870, 2, 262160, 1572870, 2, 589854, 458758, 1, 589855, 393222, 1, 589856, 458758, 1, 589857, 524294, 1, 589858, 393222, 1, 589859, 458758, 1, 589860, 524294, 1, 589853, 393222, 1, 393251, 393222, 1, 393252, 458758, 1, 393253, 524294, 1, 262183, 393222, 1, 262184, 458758, 1, 262185, 524294, 1, 589868, 393222, 1, 589869, 458758, 1, 589870, 524294, 1, 393262, 393222, 1, 393263, 458758, 1, 393264, 524294, 1, 50, 393222, 1, 51, 458758, 1, 52, 524294, 1, 65579, 393222, 1, 65580, 458758, 1, 131108, 393222, 1, 131109, 458758, 1, 196655, 393222, 1, 196656, 458758, 1, 196657, 524294, 1, 720935, 393222, 1, 720936, 458758, 1, 720937, 524294, 1, 524310, 1703942, 3, 524311, 1769478, 3, 524312, 1835014, 3, 524294, 1703942, 3, 524295, 1769478, 3, 524296, 1835014, 3, 327684, 1835014, 3, 393228, 1703942, 3, 393229, 1769478, 3, 393230, 1835014, 3, 524320, 1703942, 3, 524321, 1769478, 3, 524322, 1835014, 3, 196647, 1703942, 3, 196648, 1769478, 3, 196649, 1835014, 3, 131119, 1703942, 3, 131120, 1769478, 3, 131121, 1835014, 3, -65486, 1703942, 3, -65485, 1769478, 3, -65484, 1835014, 3, 65572, 1703942, 3, 65573, 1769478, 3, 131127, 720902, 1, 131128, 786438, 1, 458813, 720902, 1, 458814, 786438, 1, 131137, 720902, 1, 131138, 786438, 1, 589889, 720902, 1, 589890, 786438, 1, 458821, 720902, 1, 458822, 786438, 1, 327731, 917510, 1, 262188, 917510, 1, 262203, 917510, 1, 458808, 917510, 1, 655419, 917510, 1, 458794, 917510, 1, 327734, 917510, 1, 65584, 917510, 1)
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CanvasLayer/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 10
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = -18
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 8
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_stretch_ratio = 1.17
+alignment = 1
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/VBoxContainer/HBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("5_l1ke6")
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/VBoxContainer/HBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("5_7kc56")
+
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/VBoxContainer/HBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("6_l3ln2")
+
+[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/VBoxContainer/HBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("7_gcjlr")
+
+[node name="TextureRect5" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/VBoxContainer/HBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("8_hm4eo")
