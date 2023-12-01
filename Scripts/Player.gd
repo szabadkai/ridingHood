@@ -2,11 +2,11 @@
 
 extends CharacterBody2D
 
-@export var gravity = 800.0
+@export var gravity = 700.0
 @export var speed = 100.0
 @export var acceleration = 800.0
 @export var friction = 1000.0
-@export var jump_velocity = -300.0
+@export var jump_velocity = -250.0
 @export var gravity_scale = 1.0
 @export var air_resistance = 200.0
 @export var air_acceleration = 400.0
@@ -58,7 +58,7 @@ func apply_air_resistance(input_axis, delta):
 
 func handle_jump():
     if is_on_floor() or $Timer.time_left > 0.0:
-        if Input.is_action_pressed("ui_jump"):
+        if Input.is_action_just_pressed("ui_jump"):
             velocity.y = jump_velocity
             $Timer.stop()
     elif not is_on_floor():

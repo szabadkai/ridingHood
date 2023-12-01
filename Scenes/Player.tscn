@@ -130,8 +130,9 @@ animations = [{
 "speed": 10.0
 }]
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_172n8"]
-size = Vector2(11, 18)
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_5q5cl"]
+radius = 5.5
+height = 18.0
 
 [node name="Player" type="CharacterBody2D"]
 texture_filter = 1
@@ -144,8 +145,8 @@ sprite_frames = SubResource("SpriteFrames_8oddw")
 autoplay = "default"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(-1.5, 0)
-shape = SubResource("RectangleShape2D_172n8")
+position = Vector2(-1, 0)
+shape = SubResource("CapsuleShape2D_5q5cl")
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.1
