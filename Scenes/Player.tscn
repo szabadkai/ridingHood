@@ -1,10 +1,12 @@
-[gd_scene load_steps=25 format=3 uid="uid://bmoh5fh08pnhu"]
+[gd_scene load_steps=28 format=3 uid="uid://bmoh5fh08pnhu"]
 
 [ext_resource type="Script" path="res://Scripts/Player.gd" id="1_01xxx"]
 [ext_resource type="Texture2D" uid="uid://673b3jphrfa0" path="res://Assets/Light/roll/roll15.png" id="2_ybevf"]
 [ext_resource type="Texture2D" uid="uid://c74nfyqw6y4af" path="res://Assets/Light/roll/roll9.png" id="3_uh8ux"]
 [ext_resource type="Texture2D" uid="uid://dhn04upkjdmkd" path="res://Assets/Light/roll/roll11.png" id="4_ww5mm"]
 [ext_resource type="Texture2D" uid="uid://drmyhchqvani6" path="res://Assets/Light/run/run0.png" id="5_e5p7r"]
+[ext_resource type="Texture2D" uid="uid://sjse7fs1hiyw" path="res://Assets/Light/idle_blink/idle_blink0.png" id="5_oypbc"]
+[ext_resource type="Texture2D" uid="uid://cwywlnpp1qb2p" path="res://Assets/Light/idle_blink/idle_blink1.png" id="6_7uc7y"]
 [ext_resource type="Texture2D" uid="uid://ceep8suukdmek" path="res://Assets/Light/run/run1.png" id="6_rlu6u"]
 [ext_resource type="Texture2D" uid="uid://l6afhuk8025a" path="res://Assets/Light/run/run2.png" id="7_qt4ls"]
 [ext_resource type="Texture2D" uid="uid://1gcssgln7efi" path="res://Assets/Light/run/run3.png" id="8_04tu8"]
@@ -12,6 +14,7 @@
 [ext_resource type="Texture2D" uid="uid://cjvkwi85ymwdn" path="res://Assets/Light/run/run5.png" id="10_1uoe2"]
 [ext_resource type="Texture2D" uid="uid://bexr1k6ol5it7" path="res://Assets/Light/run/run6.png" id="11_ld07k"]
 [ext_resource type="Texture2D" uid="uid://d1fvd8dici0fj" path="res://Assets/Light/run/run7.png" id="12_dktka"]
+[ext_resource type="Texture2D" uid="uid://gouikovxr84s" path="res://Assets/Light/look_intro/look_intro0.png" id="12_hmocw"]
 [ext_resource type="Texture2D" uid="uid://jx4oql4oj82o" path="res://Assets/Light/run/run8.png" id="13_wrfml"]
 [ext_resource type="Texture2D" uid="uid://brranqtcr24gv" path="res://Assets/Light/run/run9.png" id="14_0jfjh"]
 [ext_resource type="Texture2D" uid="uid://dth25nkj28pya" path="res://Assets/Light/jump/jump0.png" id="15_ikxqo"]
@@ -40,10 +43,22 @@ animations = [{
 "name": &"crouch",
 "speed": 5.0
 }, {
-"frames": [],
+"frames": [{
+"duration": 10.0,
+"texture": ExtResource("12_hmocw")
+}, {
+"duration": 5.0,
+"texture": ExtResource("6_7uc7y")
+}, {
+"duration": 1.0,
+"texture": ExtResource("5_oypbc")
+}, {
+"duration": 5.0,
+"texture": ExtResource("6_7uc7y")
+}],
 "loop": true,
 "name": &"default",
-"speed": 5.0
+"speed": 3.0
 }, {
 "frames": [{
 "duration": 1.0,
@@ -126,11 +141,11 @@ script = ExtResource("1_01xxx")
 texture_filter = 1
 position = Vector2(-2, 0)
 sprite_frames = SubResource("SpriteFrames_8oddw")
-animation = &"crouch"
 autoplay = "default"
-frame = 2
-frame_progress = 1.0
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(-1.5, 0)
 shape = SubResource("RectangleShape2D_172n8")
+
+[node name="Timer" type="Timer" parent="."]
+wait_time = 0.1
