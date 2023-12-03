@@ -1,14 +1,16 @@
-[gd_scene load_steps=12 format=3 uid="uid://bnngwksvevi1g"]
+[gd_scene load_steps=14 format=3 uid="uid://bnngwksvevi1g"]
 
 [ext_resource type="Script" path="res://Scripts/Main.gd" id="1_75ln0"]
 [ext_resource type="PackedScene" uid="uid://bmoh5fh08pnhu" path="res://Scenes/Player.tscn" id="1_ilq7n"]
 [ext_resource type="Texture2D" uid="uid://dylwi5kluvhd6" path="res://Assets/tiles.png" id="2_bafmq"]
 [ext_resource type="Script" path="res://Scenes/Deck.gd" id="4_cwmde"]
+[ext_resource type="Texture2D" uid="uid://cwvqeedmfy0rr" path="res://Assets/Pixel UI/Icons/heart.png" id="4_rvxvu"]
 [ext_resource type="Texture2D" uid="uid://cvsn2kixrb0hc" path="res://Assets/cards/tile027.png" id="5_7kc56"]
 [ext_resource type="Texture2D" uid="uid://cntkbl4cvluqj" path="res://Assets/cards/tile000.png" id="5_l1ke6"]
 [ext_resource type="Texture2D" uid="uid://1aqd77cab4vp" path="res://Assets/cards/tile031.png" id="6_l3ln2"]
 [ext_resource type="Texture2D" uid="uid://q35wwqiyvc5r" path="res://Assets/cards/tile018.png" id="7_gcjlr"]
 [ext_resource type="Texture2D" uid="uid://0511h0k1qaxa" path="res://Assets/cards/tile033.png" id="8_hm4eo"]
+[ext_resource type="PackedScene" uid="uid://boxk7w6bhdey1" path="res://Scenes/Orc.tscn" id="11_n2oaq"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o3vai"]
 texture = ExtResource("2_bafmq")
@@ -322,6 +324,33 @@ theme_override_constants/margin_top = 10
 theme_override_constants/margin_right = 10
 theme_override_constants/margin_bottom = -18
 
+[node name="VBoxContainer2" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control/MarginContainer/VBoxContainer2"]
+layout_mode = 2
+size_flags_horizontal = 0
+size_flags_vertical = 0
+
+[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/VBoxContainer2/HBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("4_rvxvu")
+stretch_mode = 2
+
+[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/VBoxContainer2/HBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("4_rvxvu")
+stretch_mode = 2
+
+[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/VBoxContainer2/HBoxContainer"]
+texture_filter = 1
+layout_mode = 2
+texture = ExtResource("4_rvxvu")
+stretch_mode = 2
+
 [node name="VBoxContainer" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
 layout_mode = 2
 size_flags_horizontal = 4
@@ -361,3 +390,6 @@ texture = ExtResource("8_hm4eo")
 [node name="Timer" type="Timer" parent="CanvasLayer/Control/MarginContainer/VBoxContainer/HBoxContainer"]
 process_callback = 0
 wait_time = 2.0
+
+[node name="Orc" parent="." instance=ExtResource("11_n2oaq")]
+position = Vector2(107, 128)

@@ -1,0 +1,34 @@
+[remap]
+
+importer="texture"
+type="CompressedTexture2D"
+uid="uid://bh1xy2u4x42v2"
+path="res://.godot/imported/tiny_white_plus.png-027cc0d32f2cb542e2b05171b4cb75c8.ctex"
+metadata={
+"vram_texture": false
+}
+
+[deps]
+
+source_file="res://Assets/Pixel UI/Others/Tiny Plus & Minus Icons/tiny_white_plus.png"
+dest_files=["res://.godot/imported/tiny_white_plus.png-027cc0d32f2cb542e2b05171b4cb75c8.ctex"]
+
+[params]
+
+compress/mode=0
+compress/high_quality=false
+compress/lossy_quality=0.7
+compress/hdr_compression=1
+compress/normal_map=0
+compress/channel_pack=0
+mipmaps/generate=false
+mipmaps/limit=-1
+roughness/mode=0
+roughness/src_normal=""
+process/fix_alpha_border=true
+process/premult_alpha=false
+process/normal_map_invert_y=false
+process/hdr_as_srgb=false
+process/hdr_clamp_exposure=false
+process/size_limit=0
+detect_3d/compress_to=1
