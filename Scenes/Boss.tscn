@@ -1,0 +1,91 @@
+[gd_scene load_steps=13 format=3 uid="uid://cu8ef6r4jcdf6"]
+
+[ext_resource type="Script" path="res://Scripts/Orc.gd" id="1_skw7c"]
+[ext_resource type="Texture2D" uid="uid://be8iytn1ckgq5" path="res://Assets/0x72_DungeonTilesetII_v1.6.png" id="2_24ul1"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_fgirr"]
+atlas = ExtResource("2_24ul1")
+region = Rect2(21, 430, 26, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_vuojv"]
+atlas = ExtResource("2_24ul1")
+region = Rect2(53, 430, 26, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_nvfhy"]
+atlas = ExtResource("2_24ul1")
+region = Rect2(85, 430, 26, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r7alb"]
+atlas = ExtResource("2_24ul1")
+region = Rect2(117, 430, 26, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ki7vq"]
+atlas = ExtResource("2_24ul1")
+region = Rect2(149, 430, 26, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3ovou"]
+atlas = ExtResource("2_24ul1")
+region = Rect2(181, 430, 26, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_os56e"]
+atlas = ExtResource("2_24ul1")
+region = Rect2(213, 430, 26, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_iab7e"]
+atlas = ExtResource("2_24ul1")
+region = Rect2(245, 430, 26, 34)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_vnfcv"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_fgirr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_vuojv")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_nvfhy")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r7alb")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ki7vq")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3ovou")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_os56e")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_iab7e")
+}],
+"loop": true,
+"name": &"default",
+"speed": 10.0
+}]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_f8ce5"]
+size = Vector2(18, 23.9167)
+
+[node name="CharacterBody2D" type="CharacterBody2D"]
+script = ExtResource("1_skw7c")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+texture_filter = 1
+sprite_frames = SubResource("SpriteFrames_vnfcv")
+autoplay = "default"
+frame_progress = 0.189231
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+position = Vector2(-2, 1.65)
+scale = Vector2(1.2, 1.2)
+shape = SubResource("RectangleShape2D_f8ce5")
+
+[node name="RayCast2D" type="RayCast2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(10, 15)
+target_position = Vector2(2, 5)
+collide_with_areas = true
