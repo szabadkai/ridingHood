@@ -1,6 +1,6 @@
 extends CharacterBody2D
 var direction = 1 
-@onready var timer = $Timer
+
 @onready var ray_cast_2d = $RayCast2D
 
 
