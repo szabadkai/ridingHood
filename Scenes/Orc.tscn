@@ -61,10 +61,9 @@ animations = [{
 }]
 
 [sub_resource type="RectangleShape2D" id="RectangleShape2D_f8ce5"]
-size = Vector2(20, 23)
+size = Vector2(20, 25)
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
-platform_floor_layers = 4294967293
 script = ExtResource("2_qbtny")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -74,10 +73,11 @@ autoplay = "default"
 frame_progress = 0.699128
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
-position = Vector2(0, 1.5)
+position = Vector2(0, 2.5)
 shape = SubResource("RectangleShape2D_f8ce5")
 
-[node name="Timer" type="Timer" parent="."]
-process_mode = 1
-process_callback = 0
-wait_time = 2.278
+[node name="RayCast2D" type="RayCast2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(10, 15)
+target_position = Vector2(2, 5)
+collide_with_areas = true
