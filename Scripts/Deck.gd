@@ -1,15 +1,32 @@
 extends HBoxContainer
 
 @onready var timer = $Timer
+var Card = load("res://Scenes/Card.tscn")
 
 var cards = []
 
 
 func _ready():
-	cards = [$TextureRect, $TextureRect2, $TextureRect3, $TextureRect4, $TextureRect5]
+	var deck=[]
+	for i in range(55):
+		deck.append(i)
+	
+	deck.shuffle()
+	
+	for i in deck.slice(0,5):
+		print(i)
+		var card = Card.instantiate()
+		card.idx = i
+		add_child(card)
+
 
 
 func _process(delta):
+	#jiggle()
+	pass
+
+
+func jiggle():
 	if timer.time_left <= 0.01:
 		timer.start(2)
 		var tween = create_tween().set_trans(Tween.TRANS_BOUNCE)
@@ -19,4 +36,3 @@ func _process(delta):
 		tween.tween_property(card, "rotation", deg_to_rad(10), .2)
 		tween.tween_property(card, "rotation", deg_to_rad(-10), .2)
 		tween.tween_property(card, "rotation", deg_to_rad(0), .1)
-

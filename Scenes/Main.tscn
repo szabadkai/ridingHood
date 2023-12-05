@@ -1,16 +1,10 @@
-[gd_scene load_steps=16 format=3 uid="uid://bnngwksvevi1g"]
+[gd_scene load_steps=10 format=3 uid="uid://bnngwksvevi1g"]
 
 [ext_resource type="Script" path="res://Scripts/Main.gd" id="1_75ln0"]
 [ext_resource type="PackedScene" uid="uid://bmoh5fh08pnhu" path="res://Scenes/Player.tscn" id="1_ilq7n"]
 [ext_resource type="Texture2D" uid="uid://dylwi5kluvhd6" path="res://Assets/tiles.png" id="2_bafmq"]
 [ext_resource type="Script" path="res://Scripts/Deck.gd" id="4_cwmde"]
 [ext_resource type="Texture2D" uid="uid://cwvqeedmfy0rr" path="res://Assets/Pixel UI/Icons/heart.png" id="4_rvxvu"]
-[ext_resource type="Texture2D" uid="uid://cvsn2kixrb0hc" path="res://Assets/cards/tile027.png" id="5_7kc56"]
-[ext_resource type="Texture2D" uid="uid://cntkbl4cvluqj" path="res://Assets/cards/tile000.png" id="5_l1ke6"]
-[ext_resource type="Texture2D" uid="uid://1aqd77cab4vp" path="res://Assets/cards/tile031.png" id="6_l3ln2"]
-[ext_resource type="Script" path="res://Scripts/Card.gd" id="7_61wxr"]
-[ext_resource type="Texture2D" uid="uid://q35wwqiyvc5r" path="res://Assets/cards/tile018.png" id="7_gcjlr"]
-[ext_resource type="Texture2D" uid="uid://0511h0k1qaxa" path="res://Assets/cards/tile033.png" id="8_hm4eo"]
 [ext_resource type="PackedScene" uid="uid://boxk7w6bhdey1" path="res://Scenes/Orc.tscn" id="11_n2oaq"]
 [ext_resource type="PackedScene" uid="uid://cu8ef6r4jcdf6" path="res://Scenes/Boss.tscn" id="12_052x7"]
 
@@ -367,36 +361,6 @@ layout_mode = 2
 size_flags_stretch_ratio = 1.17
 alignment = 1
 script = ExtResource("4_cwmde")
-
-[node name="TextureRect" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/Deck/HBoxContainer"]
-texture_filter = 1
-layout_mode = 2
-texture = ExtResource("5_l1ke6")
-script = ExtResource("7_61wxr")
-
-[node name="TextureRect2" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/Deck/HBoxContainer"]
-texture_filter = 1
-layout_mode = 2
-texture = ExtResource("5_7kc56")
-script = ExtResource("7_61wxr")
-
-[node name="TextureRect3" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/Deck/HBoxContainer"]
-texture_filter = 1
-layout_mode = 2
-texture = ExtResource("6_l3ln2")
-script = ExtResource("7_61wxr")
-
-[node name="TextureRect4" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/Deck/HBoxContainer"]
-texture_filter = 1
-layout_mode = 2
-texture = ExtResource("7_gcjlr")
-script = ExtResource("7_61wxr")
-
-[node name="TextureRect5" type="TextureRect" parent="CanvasLayer/Control/MarginContainer/Deck/HBoxContainer"]
-texture_filter = 1
-layout_mode = 2
-texture = ExtResource("8_hm4eo")
-script = ExtResource("7_61wxr")
 
 [node name="Timer" type="Timer" parent="CanvasLayer/Control/MarginContainer/Deck/HBoxContainer"]
 process_callback = 0

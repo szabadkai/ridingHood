@@ -1,0 +1,9 @@
+[gd_scene load_steps=3 format=3 uid="uid://cc6k3xmfeke0d"]
+
+[ext_resource type="Texture2D" uid="uid://cntkbl4cvluqj" path="res://Assets/cards/tile000.png" id="1_fyw0n"]
+[ext_resource type="Script" path="res://Scripts/Card.gd" id="2_odf6h"]
+
+[node name="Card" type="TextureRect"]
+texture_filter = 1
+texture = ExtResource("1_fyw0n")
+script = ExtResource("2_odf6h")
