@@ -14,16 +14,15 @@ func _ready():
 	deck.shuffle()
 	
 	for i in deck.slice(0,5):
-		print(i)
 		var card = Card.instantiate()
 		card.idx = i
 		add_child(card)
+		cards.append(card)
 
 
 
 func _process(delta):
-	#jiggle()
-	pass
+	jiggle()
 
 
 func jiggle():
