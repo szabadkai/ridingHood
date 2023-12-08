@@ -15,7 +15,6 @@ func _physics_process(delta):
 		get_tree().reload_current_scene()
 
 
-
 func _on_enemy_fight():
 	camera.zoom = Vector2(2,2)
 

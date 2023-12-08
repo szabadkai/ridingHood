@@ -10,6 +10,8 @@ extends CharacterBody2D
 @export var gravity_scale = 1.0
 @export var air_resistance = 200.0
 @export var air_acceleration = 400.0
+@onready var default_animation = $AnimatedSprite2D
+@onready var attack_animation = $AttackAnimation
 
 
 #movement states
@@ -18,9 +20,10 @@ var is_climbing = false
 
 #movement and physics
 func _physics_process(delta):
+	is_attacking = Input.is_action_pressed("ui_attack")
 	apply_gravity(delta)
 	handle_jump()
-
+	handle_attack()
 	var input_axis = Input.get_axis("ui_left", "ui_right")
 	handle_acceleration(input_axis, delta)
 	handle_air_acceleration(input_axis, delta)
@@ -37,6 +40,16 @@ func _physics_process(delta):
 	
 	update_animations(input_axis)
 		
+		
+func handle_attack():
+	if  is_attacking:
+		default_animation.visible = false
+		attack_animation.visible = true	
+	else:
+		default_animation.visible = true
+		attack_animation.visible = false
+		attack_animation.play('attack2')
+	
 func handle_acceleration(input_axis, delta):
 	if not is_on_floor(): return
 	if input_axis != 0:
@@ -79,15 +92,17 @@ func horizontal_movement():
 
 func update_animations(input_axis):
 	if input_axis != 0:
-		$AnimatedSprite2D.flip_h = (input_axis < 0)
-		$AnimatedSprite2D.play("run")
+		default_animation.flip_h = (input_axis < 0)
+		attack_animation.flip_h = (input_axis < 0)
+		attack_animation.offset =   Vector2(-12,0) if input_axis < 0 else Vector2(0,0)
+		default_animation.play("run")
 	else:
-		$AnimatedSprite2D.play("default")
+		default_animation.play("default")
 	
 	if not is_on_floor():
 		if velocity.y < 0:
-			$AnimatedSprite2D.play("jump")
+			default_animation.play("jump")
 		else: 
-			$AnimatedSprite2D.play("fall")
+			default_animation.play("fall")
 		
 	

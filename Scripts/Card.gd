@@ -1,5 +1,6 @@
 extends TextureRect
 
+
 @export var idx = 0
 
 func _ready():
@@ -11,19 +12,8 @@ func _get_drag_data(at_position):
 	
 func _get_preview_control() -> Control:
 	var preview = TextureRect.new()
+
 	preview.size = size
 	preview.texture = texture
+	visible = false
 	return preview
-
-
-func dir_contents(path):
-	var dir = DirAccess.open(path)
-	var files = []
-	if dir:
-		dir.list_dir_begin()
-		var file_name = dir.get_next()
-		while file_name != "":
-			if not dir.current_is_dir():
-				files.append(file_name)
-	print(files)
-	return files
