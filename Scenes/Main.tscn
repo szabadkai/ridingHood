@@ -367,15 +367,6 @@ script = ExtResource("4_cwmde")
 process_callback = 0
 wait_time = 2.0
 
-[node name="Orc" parent="." instance=ExtResource("11_n2oaq")]
-position = Vector2(107, 128)
-
-[node name="Orc2" parent="." instance=ExtResource("11_n2oaq")]
-position = Vector2(360, 125)
-
-[node name="Orc3" parent="." instance=ExtResource("11_n2oaq")]
-position = Vector2(698, 127)
-
 [node name="Boss" parent="." instance=ExtResource("12_052x7")]
 position = Vector2(1189, 52)
 
@@ -387,3 +378,14 @@ position = Vector2(272, 64)
 
 [node name="Food3" parent="." instance=ExtResource("8_luuxh")]
 position = Vector2(832, 48)
+
+[node name="Enemies" type="Node" parent="."]
+
+[node name="Enemy" parent="Enemies" instance=ExtResource("11_n2oaq")]
+position = Vector2(115, 125)
+
+[node name="Enemy2" parent="Enemies" instance=ExtResource("11_n2oaq")]
+position = Vector2(351, 119)
+
+[node name="Enemy3" parent="Enemies" instance=ExtResource("11_n2oaq")]
+position = Vector2(735, 108)

@@ -1,5 +1,7 @@
 extends CharacterBody2D
 var direction = 1 
+signal  fight
+signal flee
 
 @onready var ray_cast_2d = $RayCast2D
 
@@ -27,3 +29,13 @@ func apply_ai():
 func flip():
 	direction *= -1
 	scale.x *= -1
+
+
+func _on_area_2d_body_entered(body):
+	if body.name == "Player":
+		fight.emit()
+
+
+func _on_area_2d_body_exited(body):
+	if body.name == "Player":
+		flee.emit()
