@@ -1,4 +1,4 @@
-[gd_scene load_steps=2 format=3 uid="uid://bqx80a02m3n4p"]
+[gd_scene load_steps=2 format=3 uid="uid://bqx80an2m3k4p"]
 
 [ext_resource type="Script" uid="uid://bb6kek51kmo12" path="res://Scripts/ParallaxBackground.gd" id="1_parallax"]
 
