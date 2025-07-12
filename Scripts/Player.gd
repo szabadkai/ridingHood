@@ -10,7 +10,6 @@ func _ready():
 	attack_collider.monitorable = false
 
 signal health_changed(current_health, max_health)
-signal player_died
 
 @export var gravity = 700.0
 @export var speed = 100.0
@@ -120,12 +119,8 @@ func flash_effect():
 
 func die():
 	print("Player died!")
-	player_died.emit()
-	# Add death logic here (restart level, game over screen, etc.)
-	# For now, just respawn at origin
-	position = Vector2.ZERO
-	current_health = max_health
-	health_changed.emit(current_health, max_health)
+	# Change to death screen scene
+	get_tree().change_scene_to_file("res://Scenes/DeathScreen.tscn")
 
 func get_health():
 	return current_health

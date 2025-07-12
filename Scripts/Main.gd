@@ -1,7 +1,6 @@
 extends Node2D
 
 @onready var player = $Player
-@onready var orc = $Orc
 @onready var camera = $Player/Camera2D
 @onready var enemies = $Enemies
 @onready var hearts_container = $CanvasLayer/Control/MarginContainer/Hearts/HBoxContainer
@@ -17,7 +16,6 @@ func _ready():
 	
 	# Connect player signals
 	player.health_changed.connect(_on_player_health_changed)
-	player.player_died.connect(_on_player_died)
 	
 	# Setup parallax background
 	print("Main: Setting up parallax background...")
@@ -40,9 +38,11 @@ func _ready():
 	
 	print("Main: Setup complete")
 		
-func _physics_process(delta):
+func _physics_process(_delta):
 	if player.position.y >180:
-		get_tree().reload_current_scene()
+		print("Player fell off screen - triggering death")
+		# Trigger player death instead of just reloading scene
+		player.die()
 
 func update_health_display():
 	var current_health = player.get_health()
@@ -59,12 +59,7 @@ func update_health_display():
 func _on_player_health_changed(current_health: int, max_health: int):
 	update_health_display()
 
-func _on_player_died():
-	print("Player died - restarting scene...")
-	get_tree().paused = true
-	await get_tree().create_timer(1).timeout
-	get_tree().paused = false
-	get_tree().reload_current_scene()
+# Removed _on_player_died() function since we're now changing scenes directly
 
 func _on_enemy_fight():
 	camera.zoom = Vector2(2,2)

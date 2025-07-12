@@ -139,6 +139,13 @@ size = Vector2(22, 25)
 collision_layer = 2
 script = ExtResource("2_qbtny")
 orc_speed = 100.0
+orc_damage = null
+damage_amount = null
+speed = null
+acceleration = null
+gravity = null
+health = null
+max_health = null
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
