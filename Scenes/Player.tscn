@@ -1,6 +1,6 @@
 [gd_scene load_steps=53 format=3 uid="uid://bmoh5fh08pnhu"]
 
-[ext_resource type="Script" path="res://Scripts/Player.gd" id="1_01xxx"]
+[ext_resource type="Script" uid="uid://dpw6hygdocbfv" path="res://Scripts/Player.gd" id="1_01xxx"]
 [ext_resource type="Texture2D" uid="uid://673b3jphrfa0" path="res://Assets/Light/roll/roll15.png" id="2_ybevf"]
 [ext_resource type="Texture2D" uid="uid://c74nfyqw6y4af" path="res://Assets/Light/roll/roll9.png" id="3_uh8ux"]
 [ext_resource type="Texture2D" uid="uid://dhn04upkjdmkd" path="res://Assets/Light/roll/roll11.png" id="4_ww5mm"]
@@ -274,3 +274,8 @@ shape = SubResource("CapsuleShape2D_5q5cl")
 
 [node name="Timer" type="Timer" parent="."]
 wait_time = 0.1
+
+[node name="InvincibilityTimer" type="Timer" parent="."]
+one_shot = true
+
+[connection signal="timeout" from="InvincibilityTimer" to="." method="_on_invincibility_timer_timeout"]

@@ -1,41 +1,12 @@
-extends CharacterBody2D
-var direction = 1 
-signal  fight
-signal flee
+extends Enemy
 
-@onready var ray_cast_2d = $RayCast2D
+# Orc-specific properties
+@export var orc_speed: float = 50.0
+@export var orc_damage: int = 1
+@export	var orc_max_speed:int =50
 
-
-
-# Called when the node enters the scene tree for the first time.
 func _ready():
-	set_up_direction(Vector2.UP)
-
-func _physics_process(delta):
-	apply_gravity(delta)
-	apply_ai()
-	velocity.x = move_toward(velocity.x, 10 * direction, 200 * delta)
-	move_and_slide()
-
-func apply_gravity(delta):
-	if not is_on_floor():
-		velocity.y += 700 * delta
-
-func apply_ai():
-	if is_on_wall() or not ray_cast_2d.is_colliding():
-		flip()
-		
- 
-func flip():
-	direction *= -1
-	scale.x *= -1
-
-
-func _on_area_2d_body_entered(body):
-	if body.name == "Player":
-		fight.emit()
-
-
-func _on_area_2d_body_exited(body):
-	if body.name == "Player":
-		flee.emit()
+	super._ready()
+	# Override base properties for orc
+	speed = orc_speed
+	damage_amount = orc_damage
