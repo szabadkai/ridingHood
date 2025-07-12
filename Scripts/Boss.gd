@@ -129,15 +129,46 @@ func take_damage(damage: int):
 
 # Override the base death function for boss-specific death behavior
 func die():
+	if not is_alive:
+		return
+		
 	is_alive = false
 	enemy_died.emit()
 	
-	# Boss death effect
+	print("Boss died: ", name)
+	
+	# Stop movement and disable collisions
+	velocity = Vector2.ZERO
+	set_physics_process(false)
+	
+	# Disable collision detection
+	if has_node("Area2D"):
+		$Area2D.monitoring = false
+		$Area2D.monitorable = false
+	
+	# Boss death effect - red flash then death animation
 	if animated_sprite:
 		animated_sprite.modulate = Color.RED
+		await get_tree().create_timer(0.2).timeout
+		animated_sprite.modulate = Color.WHITE
 	
-	# Wait a moment before disappearing
-	await get_tree().create_timer(1.0).timeout
+	# Play death animation if available
+	if animated_sprite and animated_sprite.sprite_frames:
+		if animated_sprite.sprite_frames.has_animation("death"):
+			print("Playing boss death animation")
+			animated_sprite.play("death")
+			await animated_sprite.animation_finished
+		else:
+			print("No boss death animation found, using fallback")
+			# Fallback: fade out effect
+			var tween = create_tween()
+			tween.tween_property(animated_sprite, "modulate", Color.TRANSPARENT, 1.0)
+			await tween.finished
+	else:
+		print("No boss animated sprite found, using fallback")
+		# Fallback: wait a moment then disappear
+		await get_tree().create_timer(1.0).timeout
 	
 	# Remove from scene
+	print("Removing boss from scene: ", name)
 	queue_free() 

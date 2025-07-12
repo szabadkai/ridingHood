@@ -1,4 +1,4 @@
-[gd_scene load_steps=53 format=3 uid="uid://bmoh5fh08pnhu"]
+[gd_scene load_steps=54 format=3 uid="uid://bmoh5fh08pnhu"]
 
 [ext_resource type="Script" uid="uid://dpw6hygdocbfv" path="res://Scripts/Player.gd" id="1_01xxx"]
 [ext_resource type="Texture2D" uid="uid://673b3jphrfa0" path="res://Assets/Light/roll/roll15.png" id="2_ybevf"]
@@ -248,6 +248,9 @@ animations = [{
 radius = 5.5
 height = 18.0
 
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_yf17c"]
+size = Vector2(56, 18.5)
+
 [node name="Player" type="CharacterBody2D"]
 texture_filter = 1
 script = ExtResource("1_01xxx")
@@ -263,8 +266,6 @@ position = Vector2(5, -4)
 sprite_frames = SubResource("SpriteFrames_ftxmx")
 animation = &"attack2"
 autoplay = "attack2"
-frame = 3
-frame_progress = 1.0
 offset = Vector2(-12, 2.08165e-12)
 flip_h = true
 
@@ -278,4 +279,13 @@ wait_time = 0.1
 [node name="InvincibilityTimer" type="Timer" parent="."]
 one_shot = true
 
+[node name="AttackCollider" type="Area2D" parent="."]
+collision_layer = 0
+collision_mask = 3
+
+[node name="AttackCollisionShape" type="CollisionShape2D" parent="AttackCollider"]
+position = Vector2(-2, -0.75)
+shape = SubResource("RectangleShape2D_yf17c")
+
 [connection signal="timeout" from="InvincibilityTimer" to="." method="_on_invincibility_timer_timeout"]
+[connection signal="body_entered" from="AttackCollider" to="." method="_on_attack_collider_body_entered"]

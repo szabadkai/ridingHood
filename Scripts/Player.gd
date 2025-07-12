@@ -5,6 +5,9 @@ extends CharacterBody2D
 # Add player to a group for easy access by enemies
 func _ready():
 	add_to_group("player")
+	# Initialize attack collider as disabled
+	attack_collider.monitoring = false
+	attack_collider.monitorable = false
 
 signal health_changed(current_health, max_health)
 signal player_died
@@ -20,8 +23,11 @@ signal player_died
 @export var max_health = 3
 @export var knockback_force = 300.0
 @export var invincibility_duration = .3
+@export var attack_damage = 3
+@export var attack_knockback_force = 200.0
 @onready var default_animation = $AnimatedSprite2D
 @onready var attack_animation = $AttackAnimation
+@onready var attack_collider = $AttackCollider
 
 #movement states
 var is_attacking = false
@@ -31,7 +37,12 @@ var current_health = max_health
 
 #movement and physics
 func _physics_process(delta):
+	var was_attacking = is_attacking
 	is_attacking = Input.is_action_pressed("ui_attack")
+	
+	if is_attacking and not was_attacking:
+		print("Attack button pressed!")
+	
 	apply_gravity(delta)
 	handle_jump()
 	handle_attack()
@@ -121,15 +132,48 @@ func get_health():
 
 func get_max_health():
 	return max_health
+
+func restore_health(amount: int):
+	if current_health < max_health:
+		current_health = min(current_health + amount, max_health)
+		health_changed.emit(current_health, max_health)
+		print("Player health restored! Current health: ", current_health, "/", max_health)
+		
+		# Play health restore effect
+		play_health_restore_effect()
+	else:
+		print("Player health is already full!")
+
+func play_health_restore_effect():
+	# Create a green flash effect to indicate health restoration
+	var tween = create_tween()
+	tween.set_parallel(true)
+	
+	# Flash both animations green
+	tween.tween_property(default_animation, "modulate", Color.GREEN, 0.1)
+	tween.tween_property(attack_animation, "modulate", Color.GREEN, 0.1)
+	
+	await tween.finished
+	
+	tween = create_tween()
+	tween.set_parallel(true)
+	tween.tween_property(default_animation, "modulate", Color.WHITE, 0.1)
+	tween.tween_property(attack_animation, "modulate", Color.WHITE, 0.1)
 		
 func handle_attack():
 	if  is_attacking:
 		default_animation.visible = false
-		attack_animation.visible = true	
+		attack_animation.visible = true
+		# Enable attack collider when attacking
+		attack_collider.monitoring = true
+		attack_collider.monitorable = true
 	else:
 		default_animation.visible = true
 		attack_animation.visible = false
 		attack_animation.play('attack2')
+		# Disable attack collider when not attacking
+		attack_collider.monitoring = false
+		attack_collider.monitorable = false
 	
 func handle_acceleration(input_axis, delta):
 	if not is_on_floor(): return
@@ -185,5 +229,26 @@ func update_animations(input_axis):
 			default_animation.play("jump")
 		else: 
 			default_animation.play("fall")
-		
+
+# Attack collision detection
+func _on_attack_collider_body_entered(body):
 	
+	if not is_attacking:
+		return
+		
+	# Check if the body is an enemy
+	if body.has_method("take_damage") and body.is_in_group("enemy"):
+		# Calculate knockback direction (away from player)
+		var knockback_direction = (body.global_position - global_position).normalized()
+		# Add some upward force for better knockback effect
+		knockback_direction.y = -0.3
+		knockback_direction = knockback_direction.normalized()
+		
+		# Deal damage to the enemy
+		body.take_damage(attack_damage)
+		
+		# Apply knockback to the enemy
+		if body.has_method("apply_knockback"):
+			body.apply_knockback(knockback_direction * attack_knockback_force)
+		
+		print("Player attacked enemy! Damage: ", attack_damage)

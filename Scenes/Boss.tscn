@@ -1,7 +1,19 @@
-[gd_scene load_steps=14 format=3 uid="uid://cu8ef6r4jcdf6"]
+[gd_scene load_steps=17 format=3 uid="uid://cu8ef6r4jcdf6"]
 
 [ext_resource type="Script" uid="uid://4nvbu0umkmxi" path="res://Scripts/Boss.gd" id="1_boss"]
 [ext_resource type="Texture2D" uid="uid://be8iytn1ckgq5" path="res://Assets/0x72_DungeonTilesetII_v1.6.png" id="2_24ul1"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_death1"]
+atlas = ExtResource("2_24ul1")
+region = Rect2(277, 430, 26, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_death2"]
+atlas = ExtResource("2_24ul1")
+region = Rect2(309, 430, 26, 34)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_death3"]
+atlas = ExtResource("2_24ul1")
+region = Rect2(341, 430, 26, 34)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_fgirr"]
 atlas = ExtResource("2_24ul1")
@@ -39,6 +51,20 @@ region = Rect2(245, 430, 26, 34)
 animations = [{
 "frames": [{
 "duration": 1.0,
+"texture": SubResource("AtlasTexture_death1")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_death2")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_death3")
+}],
+"loop": false,
+"name": &"death",
+"speed": 8.0
+}, {
+"frames": [{
+"duration": 1.0,
 "texture": SubResource("AtlasTexture_fgirr")
 }, {
 "duration": 1.0,
@@ -74,6 +100,7 @@ size = Vector2(18, 23.9167)
 size = Vector2(25, 30)
 
 [node name="CharacterBody2D" type="CharacterBody2D"]
+collision_layer = 2
 script = ExtResource("1_boss")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
@@ -94,6 +121,7 @@ target_position = Vector2(2, 5)
 collide_with_areas = true
 
 [node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("RectangleShape2D_area")

@@ -1,7 +1,44 @@
-[gd_scene load_steps=13 format=3 uid="uid://boxk7w6bhdey1"]
+[gd_scene load_steps=23 format=3 uid="uid://boxk7w6bhdey1"]
 
 [ext_resource type="Texture2D" uid="uid://be8iytn1ckgq5" path="res://Assets/0x72_DungeonTilesetII_v1.6.png" id="1_kammc"]
+[ext_resource type="Texture2D" uid="uid://bqai88oxaolbq" path="res://Assets/s4m_ur4i-metroidvania-1.3-high-contrast.png" id="2_1x8oc"]
 [ext_resource type="Script" uid="uid://cr7rg6pf5ads" path="res://Scripts/Orc.gd" id="2_qbtny"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_4gh4o"]
+atlas = ExtResource("2_1x8oc")
+region = Rect2(0, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_r36w4"]
+atlas = ExtResource("2_1x8oc")
+region = Rect2(16, 32, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_j1tww"]
+atlas = ExtResource("2_1x8oc")
+region = Rect2(16, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_qqqva"]
+atlas = ExtResource("2_1x8oc")
+region = Rect2(0, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_ijxpa"]
+atlas = ExtResource("2_1x8oc")
+region = Rect2(0, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_0chhj"]
+atlas = ExtResource("2_1x8oc")
+region = Rect2(16, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_d5cnr"]
+atlas = ExtResource("2_1x8oc")
+region = Rect2(32, 64, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_bv38b"]
+atlas = ExtResource("2_1x8oc")
+region = Rect2(32, 48, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_3xr6g"]
+atlas = ExtResource("2_1x8oc")
+region = Rect2(32, 32, 16, 16)
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_tt3yx"]
 atlas = ExtResource("1_kammc")
@@ -33,6 +70,38 @@ region = Rect2(246, 386, 21, 30)
 
 [sub_resource type="SpriteFrames" id="SpriteFrames_vnfcv"]
 animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_4gh4o")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_r36w4")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_j1tww")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_qqqva")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_ijxpa")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_0chhj")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_d5cnr")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_bv38b")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_3xr6g")
+}],
+"loop": false,
+"name": &"death",
+"speed": 16.0
+}, {
 "frames": [{
 "duration": 1.0,
 "texture": SubResource("AtlasTexture_tt3yx")
@@ -67,14 +136,15 @@ size = Vector2(20, 25)
 size = Vector2(22, 25)
 
 [node name="Enemy" type="CharacterBody2D"]
+collision_layer = 2
 script = ExtResource("2_qbtny")
 orc_speed = 100.0
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 texture_filter = 1
 sprite_frames = SubResource("SpriteFrames_vnfcv")
+animation = &"death"
 autoplay = "default"
-frame_progress = 0.699128
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 position = Vector2(0, 2.5)
@@ -87,6 +157,7 @@ target_position = Vector2(2.08165e-12, 5)
 collide_with_areas = true
 
 [node name="Area2D" type="Area2D" parent="."]
+collision_layer = 2
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 position = Vector2(0, 1.5)
