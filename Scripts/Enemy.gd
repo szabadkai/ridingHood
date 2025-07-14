@@ -92,8 +92,8 @@ func die():
 	
 	# Disable collision detection
 	if has_node("Area2D"):
-		$Area2D.monitoring = false
-		$Area2D.monitorable = false
+		$Area2D.set_deferred("monitoring", false)
+		$Area2D.set_deferred("monitorable", false)
 	
 	# Play death animation if available
 	if animated_sprite and animated_sprite.sprite_frames:
@@ -130,4 +130,4 @@ func _on_area_2d_body_entered(body):
 
 func _on_area_2d_body_exited(body):
 	if body.name == "Player":
-		flee.emit() 
+		flee.emit()

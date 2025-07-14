@@ -1,14 +1,13 @@
-[gd_scene load_steps=12 format=3 uid="uid://bnngwksvevi1g"]
+[gd_scene load_steps=11 format=3 uid="uid://bnngwksvevi1g"]
 
 [ext_resource type="Script" uid="uid://uohavm7lp6iq" path="res://Scripts/Main.gd" id="1_75ln0"]
 [ext_resource type="PackedScene" uid="uid://bmoh5fh08pnhu" path="res://Scenes/Player.tscn" id="1_ilq7n"]
 [ext_resource type="Texture2D" uid="uid://dylwi5kluvhd6" path="res://Assets/tiles.png" id="2_bafmq"]
-[ext_resource type="Script" uid="uid://b5rmvbergh4ik" path="res://Scripts/Deck.gd" id="4_cwmde"]
 [ext_resource type="Texture2D" uid="uid://cwvqeedmfy0rr" path="res://Assets/Pixel UI/Icons/heart.png" id="4_rvxvu"]
 [ext_resource type="PackedScene" uid="uid://pfdnl8mu2sbw" path="res://Scenes/food.tscn" id="8_luuxh"]
 [ext_resource type="PackedScene" uid="uid://boxk7w6bhdey1" path="res://Scenes/Orc.tscn" id="11_n2oaq"]
 [ext_resource type="PackedScene" uid="uid://cu8ef6r4jcdf6" path="res://Scenes/Boss.tscn" id="12_052x7"]
-[ext_resource type="PackedScene" uid="uid://bqx80a02m3n4p" path="res://Scenes/ParallaxBackground.tscn" id="13_parallax"]
+[ext_resource type="PackedScene" uid="uid://bqx80an2m3k4p" path="res://Scenes/ParallaxBackground.tscn" id="13_parallax"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o3vai"]
 texture = ExtResource("2_bafmq")
@@ -224,22 +223,6 @@ layout_mode = 2
 texture = ExtResource("4_rvxvu")
 stretch_mode = 2
 
-[node name="Deck" type="VBoxContainer" parent="CanvasLayer/Control/MarginContainer"]
-visible = false
-layout_mode = 2
-size_flags_horizontal = 4
-size_flags_vertical = 8
-
-[node name="HBoxContainer" type="HBoxContainer" parent="CanvasLayer/Control/MarginContainer/Deck"]
-layout_mode = 2
-size_flags_stretch_ratio = 1.17
-alignment = 1
-script = ExtResource("4_cwmde")
-
-[node name="Timer" type="Timer" parent="CanvasLayer/Control/MarginContainer/Deck/HBoxContainer"]
-process_callback = 0
-wait_time = 2.0
-
 [node name="Boss" parent="." instance=ExtResource("12_052x7")]
 position = Vector2(1189, 52)
 
@@ -256,12 +239,33 @@ position = Vector2(832, 48)
 
 [node name="Enemy" parent="Enemies" instance=ExtResource("11_n2oaq")]
 position = Vector2(115, 125)
+orc_damage = 1
+damage_amount = 1
+speed = 40.0
+acceleration = 5.0
+gravity = 700.0
+health = 1
+max_health = 3
 
 [node name="Enemy2" parent="Enemies" instance=ExtResource("11_n2oaq")]
 position = Vector2(351, 119)
+orc_damage = 1
+damage_amount = 1
+speed = 40.0
+acceleration = 5.0
+gravity = 700.0
+health = 1
+max_health = 3
 
 [node name="Enemy3" parent="Enemies" instance=ExtResource("11_n2oaq")]
 position = Vector2(735, 108)
+orc_damage = 1
+damage_amount = 1
+speed = 40.0
+acceleration = 5.0
+gravity = 700.0
+health = 1
+max_health = 3
 
 [node name="Player" parent="." instance=ExtResource("1_ilq7n")]
 z_index = 1

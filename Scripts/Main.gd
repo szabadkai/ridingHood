@@ -56,7 +56,7 @@ func update_health_display():
 		var heart = hearts_container.get_child(i)
 		heart.visible = (i < visible_hearts)
 
-func _on_player_health_changed(current_health: int, max_health: int):
+func _on_player_health_changed(_current_health: int, _max_health: int):
 	update_health_display()
 
 # Removed _on_player_died() function since we're now changing scenes directly

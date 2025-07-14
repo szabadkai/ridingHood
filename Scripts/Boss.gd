@@ -147,13 +147,13 @@ func take_damage(damage: int):
 	super.take_damage(damage)
 	
 	# Boss gets more aggressive when damaged
-	if health < max_health / 2:
+	if health < max_health / 2.0:
 		speed = boss_speed * 1.5
 		attack_cooldown = 1.0
 		print("Boss enraged! Speed increased to: ", speed, " Attack cooldown: ", attack_cooldown)
 	
 	# Boss enrages at low health
-	if health < max_health / 4:
+	if health < max_health / 4.0:
 		speed = boss_speed * 2.0
 		attack_cooldown = 0.5
 		damage_amount = boss_damage * 2
