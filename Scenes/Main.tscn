@@ -3,12 +3,12 @@
 [ext_resource type="Script" uid="uid://uohavm7lp6iq" path="res://Scripts/Main.gd" id="1_75ln0"]
 [ext_resource type="PackedScene" uid="uid://bmoh5fh08pnhu" path="res://Scenes/Player.tscn" id="1_ilq7n"]
 [ext_resource type="Texture2D" uid="uid://dylwi5kluvhd6" path="res://Assets/tiles.png" id="2_bafmq"]
-[ext_resource type="Script" uid="uid://b4pkvvn08ed5g" path="res://Scripts/Deck.gd" id="4_cwmde"]
+[ext_resource type="Script" uid="uid://b5rmvbergh4ik" path="res://Scripts/Deck.gd" id="4_cwmde"]
 [ext_resource type="Texture2D" uid="uid://cwvqeedmfy0rr" path="res://Assets/Pixel UI/Icons/heart.png" id="4_rvxvu"]
 [ext_resource type="PackedScene" uid="uid://pfdnl8mu2sbw" path="res://Scenes/food.tscn" id="8_luuxh"]
 [ext_resource type="PackedScene" uid="uid://boxk7w6bhdey1" path="res://Scenes/Orc.tscn" id="11_n2oaq"]
 [ext_resource type="PackedScene" uid="uid://cu8ef6r4jcdf6" path="res://Scenes/Boss.tscn" id="12_052x7"]
-[ext_resource type="PackedScene" uid="uid://bqx80an2m3k4p" path="res://Scenes/ParallaxBackground.tscn" id="13_parallax"]
+[ext_resource type="PackedScene" uid="uid://bqx80a02m3n4p" path="res://Scenes/ParallaxBackground.tscn" id="13_parallax"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_o3vai"]
 texture = ExtResource("2_bafmq")
