@@ -5,7 +5,7 @@ extends Enemy
 @export var orc_damage: int = 1
 
 func _ready():
-	super._ready()
-	# Override base properties for orc
-	speed = orc_speed
-	damage_amount = orc_damage
+  super._ready()
+  # Override base properties for orc
+  speed = orc_speed
+  damage_amount = orc_damage

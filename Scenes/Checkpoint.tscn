@@ -1,0 +1,16 @@
+[gd_scene load_steps=3 format=3 uid="uid://bxk1il1u3s1xu"]
+
+[ext_resource type="Script" path="res://Scripts/Checkpoint.gd" id="1_7e4rg"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_d79ks"]
+radius = 12.0
+
+[node name="Checkpoint" type="Area2D"]
+collision_layer = 0
+collision_mask = 1
+monitorable = true
+monitoring = true
+script = ExtResource("1_7e4rg")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+shape = SubResource("CircleShape2D_d79ks")

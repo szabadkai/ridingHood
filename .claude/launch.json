@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dark-riding-hood",
+      "runtimeExecutable": "/Users/lszabadkai/.nvm/versions/node/v22.17.1/bin/node",
+      "runtimeArgs": ["/Users/lszabadkai/ridingHood/ridingHood-web/node_modules/.bin/vite", "--port", "3002"],
+      "port": 3002,
+      "cwd": "ridingHood-web"
+    }
+  ]
+}

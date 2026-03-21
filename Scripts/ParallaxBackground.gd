@@ -130,88 +130,88 @@ func setup_filter():
 	filter.name = "BackgroundFilter"
 	filter.color = filter_color
 	filter.z_index = -1  # Above all background layers
-	filter.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block mouse input
-	
-	# Position and size to cover entire viewport
-	var viewport_size = get_viewport().get_visible_rect().size
-	filter.position = Vector2(-viewport_size.x, -viewport_size.y)
-	filter.size = viewport_size * 3  # Make it larger to cover any movement
-	
-	add_child(filter)
-	print("Added background filter with color: ", filter_color)
+  filter.mouse_filter = Control.MOUSE_FILTER_IGNORE  # Don't block mouse input
+  
+  # Position and size to cover entire viewport
+  var viewport_size = get_viewport().get_visible_rect().size
+  filter.position = Vector2(-viewport_size.x, -viewport_size.y)
+  filter.size = viewport_size * 3  # Make it larger to cover any movement
+  
+  add_child(filter)
+  print("Added background filter with color: ", filter_color)
 
 # Function to add a custom background layer
 func add_background_layer(texture_path: String, scroll_speed: float, z_index: int = -1):
-	var texture = load(texture_path)
-	if not texture:
-		print("Warning: Could not load texture: ", texture_path)
-		return
-		
-	var parallax_layer = ParallaxLayer.new()
-	parallax_layer.motion_scale = Vector2(scroll_speed, 0)
-	parallax_layer.z_index = z_index
-	
-	var viewport_size = get_viewport().get_visible_rect().size
-	var texture_size = texture.get_size()
-	
-	var scale_x = viewport_size.x / texture_size.x
-	var scale_y = viewport_size.y / texture_size.y
-	var scale_factor = max(scale_x, scale_y)
-	
-	var scaled_texture_width = texture_size.x * scale_factor
-	var sprites_needed = int(ceil(viewport_size.x / scaled_texture_width)) + 4
-	
-	for j in range(sprites_needed):
-		var sprite = Sprite2D.new()
-		sprite.texture = texture
-		sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
-		
-		sprite.position = Vector2(j * scaled_texture_width, viewport_size.y / 2)
-		sprite.scale = Vector2(scale_factor, scale_factor)
-		
-		parallax_layer.add_child(sprite)
-	
-	add_child(parallax_layer)
-	
-	print("Added custom parallax layer: ", texture_path, " with speed: ", scroll_speed)
+  var texture = load(texture_path)
+  if not texture:
+    print("Warning: Could not load texture: ", texture_path)
+    return
+    
+  var parallax_layer = ParallaxLayer.new()
+  parallax_layer.motion_scale = Vector2(scroll_speed, 0)
+  parallax_layer.z_index = z_index
+  
+  var viewport_size = get_viewport().get_visible_rect().size
+  var texture_size = texture.get_size()
+  
+  var scale_x = viewport_size.x / texture_size.x
+  var scale_y = viewport_size.y / texture_size.y
+  var scale_factor = max(scale_x, scale_y)
+  
+  var scaled_texture_width = texture_size.x * scale_factor
+  var sprites_needed = int(ceil(viewport_size.x / scaled_texture_width)) + 4
+  
+  for j in range(sprites_needed):
+    var sprite = Sprite2D.new()
+    sprite.texture = texture
+    sprite.texture_filter = CanvasItem.TEXTURE_FILTER_NEAREST
+    
+    sprite.position = Vector2(j * scaled_texture_width, viewport_size.y / 2)
+    sprite.scale = Vector2(scale_factor, scale_factor)
+    
+    parallax_layer.add_child(sprite)
+  
+  add_child(parallax_layer)
+  
+  print("Added custom parallax layer: ", texture_path, " with speed: ", scroll_speed)
 
 # Function to remove a background layer by index
 func remove_background_layer(index: int):
-	var layers = []
-	for child in get_children():
-		if child is ParallaxLayer:
-			layers.append(child)
-	
-	if index >= 0 and index < layers.size():
-		layers[index].queue_free()
-		print("Removed parallax layer at index: ", index)
+  var layers = []
+  for child in get_children():
+    if child is ParallaxLayer:
+      layers.append(child)
+  
+  if index >= 0 and index < layers.size():
+    layers[index].queue_free()
+    print("Removed parallax layer at index: ", index)
 
 # Function to change scroll speed of a layer
 func set_layer_scroll_speed(index: int, new_speed: float):
-	var layers = []
-	for child in get_children():
-		if child is ParallaxLayer:
-			layers.append(child)
-	
-	if index >= 0 and index < layers.size():
-		layers[index].motion_scale.x = new_speed
-		print("Changed layer ", index, " speed to: ", new_speed)
+  var layers = []
+  for child in get_children():
+    if child is ParallaxLayer:
+      layers.append(child)
+  
+  if index >= 0 and index < layers.size():
+    layers[index].motion_scale.x = new_speed
+    print("Changed layer ", index, " speed to: ", new_speed)
 
 # Function to get current layer count
 func get_layer_count() -> int:
-	var count = 0
-	for child in get_children():
-		if child is ParallaxLayer:
-			count += 1
-	return count
+  var count = 0
+  for child in get_children():
+    if child is ParallaxLayer:
+      count += 1
+  return count
 
 # Function to change filter color
 func set_filter_color(color: Color):
-	filter_color = color
-	if enable_filter:
-		setup_filter()
+  filter_color = color
+  if enable_filter:
+    setup_filter()
 
 # Function to enable/disable filter
 func set_filter_enabled(enabled: bool):
-	enable_filter = enabled
-	setup_filter()
+  enable_filter = enabled
+  setup_filter()
