@@ -60,11 +60,3 @@ export const ENEMY = {
   ORC_ACCELERATION: 5,
 } as const;
 
-export const PARALLAX_LAYERS = [
-  { key: 'bg1', scrollSpeed: 0.1 },
-  { key: 'bg2', scrollSpeed: 0.2 },
-  { key: 'bg3', scrollSpeed: 0.3 },
-  { key: 'bg4', scrollSpeed: 0.4 },
-  { key: 'bg5', scrollSpeed: 0.6 },
-  { key: 'bg6', scrollSpeed: 0.7 },
-] as const;

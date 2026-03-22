@@ -1,6 +1,7 @@
 import Phaser from 'phaser';
 import { LIGHT_ANIMS, DARK_ANIMS, FX_ANIMS, type AnimDef } from '../config/AnimationConfig';
 import { SoundManager } from '../systems/SoundManager';
+import { LEVELS } from '../levels/LevelData';
 
 function padIndex(i: number, zeroPad: number): string {
   if (zeroPad <= 0) return String(i);
@@ -45,9 +46,15 @@ export class PreloadScene extends Phaser.Scene {
     this.loadFXFrames('assets/sprites/light', FX_ANIMS.filter(a => a.key === 'fx_light' || a.key === 'fx_lighttodark'));
     this.loadFXFrames('assets/sprites/dark', FX_ANIMS.filter(a => a.key === 'fx_dark' || a.key === 'fx_darktolight'));
 
-    // Load background layers (7 available)
-    for (let i = 1; i <= 7; i++) {
-      this.load.image(`bg${i}`, `assets/backgrounds/forest/${i}.png`);
+    // Load background layers for all levels
+    const loadedKeys = new Set<string>();
+    for (const level of LEVELS) {
+      for (const layer of level.parallaxLayers) {
+        if (!loadedKeys.has(layer.key)) {
+          this.load.image(layer.key, layer.path);
+          loadedKeys.add(layer.key);
+        }
+      }
     }
 
     // Load tileset image

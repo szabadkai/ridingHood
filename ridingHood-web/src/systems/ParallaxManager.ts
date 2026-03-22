@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
-import { GAME_WIDTH, GAME_HEIGHT, PARALLAX_LAYERS } from '../config/GameConfig';
+import { GAME_WIDTH, GAME_HEIGHT } from '../config/GameConfig';
+import type { ParallaxLayerDef } from '../levels/LevelData';
 
 interface ParallaxLayer {
   tileSprite: Phaser.GameObjects.TileSprite;
@@ -15,9 +16,9 @@ export class ParallaxManager {
     this.scene = scene;
   }
 
-  create(): void {
+  create(layerDefs: ParallaxLayerDef[]): void {
     // Create each parallax layer as a TileSprite
-    for (const config of PARALLAX_LAYERS) {
+    for (const config of layerDefs) {
       const texture = this.scene.textures.get(config.key);
       if (!texture || texture.key === '__MISSING') continue;
 
@@ -39,7 +40,7 @@ export class ParallaxManager {
       tileSprite.setOrigin(0, 0);
       tileSprite.setScale(scaleY);
       tileSprite.setScrollFactor(0); // We manage scrolling manually
-      tileSprite.setDepth(-10 + PARALLAX_LAYERS.indexOf(config));
+      tileSprite.setDepth(-10 + layerDefs.indexOf(config));
       tileSprite.setPosition(-GAME_WIDTH, 0);
 
       this.layers.push({

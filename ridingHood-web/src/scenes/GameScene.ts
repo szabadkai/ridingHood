@@ -60,7 +60,7 @@ export class GameScene extends Phaser.Scene {
 
     // Parallax background
     this.parallaxManager = new ParallaxManager(this);
-    this.parallaxManager.create();
+    this.parallaxManager.create(this.lvl.parallaxLayers);
     this.parallaxManager.setThemeTint(this.lvl.tintColor, this.lvl.tintAlpha);
 
     // Create tilemap level

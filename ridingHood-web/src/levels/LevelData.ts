@@ -17,6 +17,12 @@ export interface GapDef {
   end: number;   // end tile column (inclusive)
 }
 
+export interface ParallaxLayerDef {
+  key: string;        // texture key to load/use
+  path: string;       // file path relative to public/assets/
+  scrollSpeed: number;
+}
+
 export interface LevelConfig {
   name: string;
   mapWidthTiles: number;
@@ -31,6 +37,8 @@ export interface LevelConfig {
   foodPositions: number[];
   essencePositions: number[];
   playerSpawnX: number;
+  // Background parallax layers (ordered back to front)
+  parallaxLayers: ParallaxLayerDef[];
   // Visual theme
   tintColor: number;       // overlay tint color
   tintAlpha: number;       // overlay tint alpha
@@ -83,6 +91,15 @@ export const LEVELS: LevelConfig[] = [
     foodPositions: [120, 280, 450, 650, 850, 1100, 1400, 1600],
     essencePositions: [200, 550, 950, 1250, 1700],
     playerSpawnX: 40,
+    parallaxLayers: [
+      { key: 'forest_bg1', path: 'assets/backgrounds/forest/1.png', scrollSpeed: 0.05 },
+      { key: 'forest_bg2', path: 'assets/backgrounds/forest/2.png', scrollSpeed: 0.1 },
+      { key: 'forest_bg3', path: 'assets/backgrounds/forest/3.png', scrollSpeed: 0.15 },
+      { key: 'forest_bg4', path: 'assets/backgrounds/forest/4.png', scrollSpeed: 0.2 },
+      { key: 'forest_bg5', path: 'assets/backgrounds/forest/5.png', scrollSpeed: 0.3 },
+      { key: 'forest_bg6', path: 'assets/backgrounds/forest/6.png', scrollSpeed: 0.4 },
+      { key: 'forest_bg7', path: 'assets/backgrounds/forest/7.png', scrollSpeed: 0.5 },
+    ],
     tintColor: 0x333355,
     tintAlpha: 0.3,
     darkTintColor: 0x220022,
@@ -138,6 +155,14 @@ export const LEVELS: LevelConfig[] = [
     foodPositions: [100, 240, 400, 560, 720, 880, 1050, 1250, 1450, 1700],
     essencePositions: [180, 500, 800, 1150, 1550, 1850],
     playerSpawnX: 40,
+    parallaxLayers: [
+      { key: 'village_bg1', path: 'assets/backgrounds/village/1.png', scrollSpeed: 0.03 },
+      { key: 'village_bg2', path: 'assets/backgrounds/village/2.png', scrollSpeed: 0.08 },
+      { key: 'village_bg3', path: 'assets/backgrounds/village/3.png', scrollSpeed: 0.13 },
+      { key: 'village_bg4', path: 'assets/backgrounds/village/4.png', scrollSpeed: 0.18 },
+      { key: 'village_bg5', path: 'assets/backgrounds/village/5.png', scrollSpeed: 0.3 },
+      { key: 'village_bg6', path: 'assets/backgrounds/village/6.png', scrollSpeed: 0.45 },
+    ],
     tintColor: 0x442211,
     tintAlpha: 0.35,
     darkTintColor: 0x331100,
@@ -196,6 +221,12 @@ export const LEVELS: LevelConfig[] = [
     foodPositions: [80, 200, 350, 500, 670, 800, 970, 1150, 1350, 1550, 1750, 1950],
     essencePositions: [150, 450, 750, 1050, 1400, 1700, 2050],
     playerSpawnX: 30,
+    parallaxLayers: [
+      { key: 'castle_bg1', path: 'assets/backgrounds/castle/1.png', scrollSpeed: 0.03 },
+      { key: 'castle_bg2', path: 'assets/backgrounds/castle/2.png', scrollSpeed: 0.1 },
+      { key: 'castle_bg3', path: 'assets/backgrounds/castle/3.png', scrollSpeed: 0.2 },
+      { key: 'castle_bg4', path: 'assets/backgrounds/castle/4.png', scrollSpeed: 0.35 },
+    ],
     tintColor: 0x222244,
     tintAlpha: 0.4,
     darkTintColor: 0x110033,
@@ -261,6 +292,11 @@ export const LEVELS: LevelConfig[] = [
     foodPositions: [80, 180, 320, 470, 600, 750, 900, 1050, 1200, 1380, 1600],
     essencePositions: [150, 400, 700, 1000, 1350, 1750],
     playerSpawnX: 30,
+    parallaxLayers: [
+      { key: 'tower_bg1', path: 'assets/backgrounds/tower/1.png', scrollSpeed: 0.05 },
+      { key: 'tower_bg2', path: 'assets/backgrounds/tower/2.png', scrollSpeed: 0.15 },
+      { key: 'tower_bg3', path: 'assets/backgrounds/tower/3.png', scrollSpeed: 0.3 },
+    ],
     tintColor: 0x332233,
     tintAlpha: 0.35,
     darkTintColor: 0x220022,
@@ -331,6 +367,13 @@ export const LEVELS: LevelConfig[] = [
     foodPositions: [80, 200, 340, 480, 620, 780, 940, 1100, 1280, 1450, 1650, 1850, 2050, 2200],
     essencePositions: [150, 400, 700, 1000, 1350, 1700, 2100, 2250],
     playerSpawnX: 30,
+    parallaxLayers: [
+      { key: 'abyss_bg1', path: 'assets/backgrounds/abyss/1.png', scrollSpeed: 0.02 },
+      { key: 'abyss_bg2', path: 'assets/backgrounds/abyss/2.png', scrollSpeed: 0.07 },
+      { key: 'abyss_bg3', path: 'assets/backgrounds/abyss/3.png', scrollSpeed: 0.12 },
+      { key: 'abyss_bg4', path: 'assets/backgrounds/abyss/4.png', scrollSpeed: 0.2 },
+      { key: 'abyss_bg5', path: 'assets/backgrounds/abyss/5.png', scrollSpeed: 0.35 },
+    ],
     tintColor: 0x110022,
     tintAlpha: 0.45,
     darkTintColor: 0x000011,
