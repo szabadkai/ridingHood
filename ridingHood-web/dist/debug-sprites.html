@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<style>
+body { background: #222; color: #fff; font-family: monospace; }
+canvas { image-rendering: pixelated; border: 1px solid #555; margin: 2px; background: #888; }
+.row { display: flex; align-items: end; gap: 8px; margin: 8px 0; }
+.label { min-width: 80px; font-size: 12px; }
+h3 { color: #ff8; margin: 16px 0 4px; }
+#tileset { border: 2px solid #f00; }
+</style>
+</head>
+<body>
+<h2>Dungeon Tileset Sprite Debug</h2>
+<div id="output"></div>
+<h3>Full Tileset (hover for coordinates)</h3>
+<div>
+  <canvas id="tileset" width="512" height="512"></canvas>
+  <div id="coords" style="font-size:14px;color:#ff0"></div>
+</div>
+<script>
+const img = new Image();
+img.src = '/ridingHood/assets/sprites/enemies/dungeon_tileset.png';
+img.onload = () => {
+  // Draw full tileset at 1x for reference with coordinate tracking
+  const tsCanvas = document.getElementById('tileset');
+  tsCanvas.width = 512;
+  tsCanvas.height = 512;
+  tsCanvas.style.width = '1024px';
+  tsCanvas.style.height = '1024px';
+  const tsCtx = tsCanvas.getContext('2d');
+  tsCtx.drawImage(img, 0, 0);
+
+  // Coordinate display on hover
+  tsCanvas.addEventListener('mousemove', (e) => {
+    const rect = tsCanvas.getBoundingClientRect();
+    const x = Math.floor((e.clientX - rect.left) * 512 / rect.width);
+    const y = Math.floor((e.clientY - rect.top) * 512 / rect.height);
+    document.getElementById('coords').textContent = `x=${x} y=${y}`;
+  });
+
+  // CORRECTED extraction definitions based on pixel scanning
+  const extractions = {
+    // Orc (confirmed)
+    'orc': { positions: [22,54,86,150,182,214,246].map(x => ({x, y:386, w:21, h:30})) },
+    // Upper area - corrected y positions and dimensions
+    'knight':    { positions: [192,208,224,240].map(x => ({x, y:70, w:15, h:26})) },
+    'elf':       { positions: [192,208,224,240].map(x => ({x, y:105, w:15, h:23})) },
+    'wizard':    { positions: [192,208,224,240].map(x => ({x, y:138, w:15, h:22})) },
+    'lizard':    { positions: [193,209,225,241].map(x => ({x, y:168, w:15, h:24})) },
+    'bigzombie': { positions: [193,209,225,241].map(x => ({x, y:202, w:15, h:22})) },
+    'ogre':      { positions: [193,209,225,241].map(x => ({x, y:235, w:15, h:21})) },
+    // Mid-area characters
+    'imp':       { positions: [193,209,225,241].map(x => ({x, y:264, w:14, h:24})) },
+    'goblin':    { positions: [193,209,225,241].map(x => ({x, y:296, w:14, h:24})) },
+    // Right side small characters
+    'skeleton':  { positions: [371,387,403,419].map(x => ({x, y:274, w:11, h:22})) },
+  };
+
+  const out = document.getElementById('output');
+  for (const [name, data] of Object.entries(extractions)) {
+    const div = document.createElement('div');
+    div.className = 'row';
+    const label = document.createElement('div');
+    label.className = 'label';
+    label.textContent = name;
+    div.appendChild(label);
+
+    for (const p of data.positions) {
+      const c = document.createElement('canvas');
+      c.width = p.w;
+      c.height = p.h;
+      c.style.width = (p.w * 4) + 'px';
+      c.style.height = (p.h * 4) + 'px';
+      const ctx = c.getContext('2d');
+      ctx.drawImage(img, p.x, p.y, p.w, p.h, 0, 0, p.w, p.h);
+      c.title = `x=${p.x} y=${p.y} ${p.w}x${p.h}`;
+      div.appendChild(c);
+    }
+    out.appendChild(div);
+  }
+};
+</script>
+</body>
+</html>
