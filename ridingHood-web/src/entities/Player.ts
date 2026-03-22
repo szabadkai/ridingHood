@@ -538,6 +538,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     this.checkpointPosition = pos.clone();
   }
 
+  clearCheckpoint(): void {
+    this.checkpointPosition = null;
+  }
+
   private die(): void {
     this.changeState(PlayerState.DEAD);
     const body = this.body as Phaser.Physics.Arcade.Body;

@@ -3,7 +3,7 @@ import { GAME_WIDTH, GAME_HEIGHT, DARKNESS_METER } from '../config/GameConfig';
 import { Player } from '../entities/Player';
 import { Enemy } from '../entities/enemies/Enemy';
 import { Orc } from '../entities/enemies/Orc';
-import { WolfKing } from '../entities/enemies/WolfKing';
+import { WolfKing, getBossConfig } from '../entities/enemies/WolfKing';
 import { Checkpoint } from '../entities/Checkpoint';
 import { Pickup } from '../entities/Pickup';
 import { CameraManager } from '../systems/CameraManager';
@@ -264,7 +264,7 @@ export class GameScene extends Phaser.Scene {
     const arenaRight = this.lvl.mapWidthTiles * TILE_SIZE;
     const safeBossX = Math.max(this.lvl.bossX, arenaLeft + 40);
     const clampedBossX = Math.min(safeBossX, arenaRight - 40);
-    const boss = new WolfKing(this, clampedBossX, groundY);
+    const boss = new WolfKing(this, clampedBossX, groundY, this.currentLevel);
     boss.setPlayerRef(this.player);
     (boss.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
     this.enemies.add(boss as unknown as Phaser.GameObjects.GameObject);
@@ -491,22 +491,25 @@ export class GameScene extends Phaser.Scene {
 
   private lockBossArena(): void {
     this.bossArenaLocked = true;
-    getSoundManager().crossfadeMusic('music_boss');
-    getSoundManager().playBossRoar();
+
+    // No respawning during boss fight — die here and it's game over
+    this.player.clearCheckpoint();
 
     const arenaWall = this.lvl.bossArenaWallCol;
     const arenaLeft = arenaWall * TILE_SIZE;
     const arenaWidth = (this.lvl.mapWidthTiles - arenaWall) * TILE_SIZE;
+    const arenaHeight = this.lvl.mapHeightTiles * TILE_SIZE;
+    const arenaCenterX = arenaLeft + arenaWidth / 2;
+    const arenaCenterY = arenaHeight / 2;
 
-    // Lock camera to the arena
-    this.cameraManager.setBounds(
-      arenaLeft,
-      0,
-      arenaWidth,
-      this.lvl.mapHeightTiles * TILE_SIZE,
-    );
+    // ── Phase 1: Freeze gameplay ──
+    // Stop player movement and disable input during cinematic
+    const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
+    playerBody.velocity.set(0, 0);
+    playerBody.setAllowGravity(false);
+    this.player.setActive(false); // stops player update
 
-    // Close the wall behind the player
+    // Close the wall behind the player immediately
     const layer = this.groundLayer;
     for (let row = 0; row <= this.lvl.mapHeightTiles - 3; row++) {
       const tile = layer.getTileAt(arenaWall, row);
@@ -516,15 +519,85 @@ export class GameScene extends Phaser.Scene {
     }
     this.groundLayer.setCollisionByExclusion([T.EMPTY]);
 
-    // Constrain player and boss within the arena
-    this.physics.world.setBounds(
-      arenaLeft,
-      0,
-      arenaWidth,
-      this.lvl.mapHeightTiles * TILE_SIZE + 50,
-    );
-    const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
-    playerBody.setCollideWorldBounds(true);
+    // Expand camera bounds so pan can reach the arena
+    this.cameraManager.setBounds(0, 0, this.lvl.mapWidthTiles * TILE_SIZE, arenaHeight);
+
+    // ── Phase 2: Pan camera to boss arena (800ms) ──
+    this.cameraManager.panTo(arenaCenterX, arenaCenterY, 800, () => {
+
+      // ── Phase 3: Letterbox + boss title card ──
+      getSoundManager().crossfadeMusic('music_boss');
+
+      // Letterbox bars
+      const cam = this.cameras.main;
+      const barHeight = 24;
+      const topBar = this.add.rectangle(cam.scrollX + GAME_WIDTH / 2, cam.scrollY - barHeight / 2, GAME_WIDTH, barHeight, 0x000000)
+        .setDepth(100).setScrollFactor(0).setOrigin(0.5, 0.5);
+      const botBar = this.add.rectangle(cam.scrollX + GAME_WIDTH / 2, cam.scrollY + GAME_HEIGHT + barHeight / 2, GAME_WIDTH, barHeight, 0x000000)
+        .setDepth(100).setScrollFactor(0).setOrigin(0.5, 0.5);
+
+      // Slide letterbox bars in
+      this.tweens.add({ targets: topBar, y: cam.scrollY + barHeight / 2, duration: 300, ease: 'Sine.easeOut' });
+      this.tweens.add({ targets: botBar, y: cam.scrollY + GAME_HEIGHT - barHeight / 2, duration: 300, ease: 'Sine.easeOut' });
+
+      // Boss name title card
+      const bossCfg = getBossConfig(this.currentLevel);
+      const titleText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 8, bossCfg.name.toUpperCase(), {
+        fontSize: '14px',
+        color: '#ff4444',
+        fontFamily: 'monospace',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 3,
+      }).setOrigin(0.5).setDepth(101).setScrollFactor(0).setAlpha(0);
+
+      const subtitleText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 8, `Level ${this.currentLevel} Boss`, {
+        fontSize: '8px',
+        color: '#ffaa88',
+        fontFamily: 'monospace',
+        stroke: '#000000',
+        strokeThickness: 2,
+      }).setOrigin(0.5).setDepth(101).setScrollFactor(0).setAlpha(0);
+
+      // Fade in title
+      this.tweens.add({
+        targets: [titleText, subtitleText],
+        alpha: 1,
+        duration: 400,
+        delay: 200,
+      });
+
+      // Roar after title appears
+      this.time.delayedCall(500, () => {
+        getSoundManager().playBossRoar();
+        this.cameras.main.shake(300, 0.008);
+      });
+
+      // ── Phase 4: Hold for a beat, then start the fight ──
+      this.time.delayedCall(2200, () => {
+        // Fade out title
+        this.tweens.add({
+          targets: [titleText, subtitleText],
+          alpha: 0,
+          duration: 300,
+          onComplete: () => { titleText.destroy(); subtitleText.destroy(); },
+        });
+
+        // Slide letterbox bars out
+        this.tweens.add({ targets: topBar, y: cam.scrollY - barHeight / 2, duration: 300, ease: 'Sine.easeIn', onComplete: () => topBar.destroy() });
+        this.tweens.add({ targets: botBar, y: cam.scrollY + GAME_HEIGHT + barHeight / 2, duration: 300, ease: 'Sine.easeIn', onComplete: () => botBar.destroy() });
+
+        // Lock camera to arena bounds and resume follow
+        this.cameraManager.setBounds(arenaLeft, 0, arenaWidth, arenaHeight);
+        this.cameraManager.resumeFollow();
+
+        // Constrain player and boss within the arena
+        this.physics.world.setBounds(arenaLeft, 0, arenaWidth, arenaHeight + 50);
+        playerBody.setCollideWorldBounds(true);
+        playerBody.setAllowGravity(true);
+        this.player.setActive(true); // re-enable player update
+      });
+    });
   }
 
   private openPause(): void {
