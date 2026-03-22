@@ -436,11 +436,8 @@ export class GameScene extends Phaser.Scene {
       }
     }
 
-    // Boss arena wall — extend from row 0 down to ground row to fully block passage
-    const arenaWall = this.lvl.bossArenaWallCol;
-    for (let row = 0; row <= groundRow; row++) {
-      data[row][arenaWall] = T.STONE;
-    }
+    // Boss arena wall is NOT placed at build time — it gets placed dynamically
+    // when the player crosses the trigger column (see lockBossArena).
 
     const map = this.make.tilemap({
       data,
