@@ -32,5 +32,21 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [BootScene, PreloadScene, MainMenuScene, OverworldScene, GameScene, UIScene, PauseScene, DeathScene, VictoryScene],
 };
 
-const game = new Phaser.Game(config);
-(window as unknown as Record<string, unknown>).__GAME__ = game;
+const isEditorMode = import.meta.env.DEV && window.location.search.includes('editor');
+
+if (isEditorMode) {
+  // Dynamically import so the editor is tree-shaken from production builds
+  import('./scenes/LevelEditorScene').then(({ LevelEditorScene }) => {
+    const editorConfig: Phaser.Types.Core.GameConfig = {
+      ...config,
+      physics: { default: 'arcade', arcade: { gravity: { x: 0, y: 0 }, debug: false } },
+      scene: [LevelEditorScene],
+    };
+    const game = new Phaser.Game(editorConfig);
+    (window as unknown as Record<string, unknown>).__GAME__ = game;
+  });
+} else {
+  const game = new Phaser.Game(config);
+  (window as unknown as Record<string, unknown>).__GAME__ = game;
+}
+
