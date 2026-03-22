@@ -68,7 +68,6 @@ export class LevelEditorScene extends Phaser.Scene {
     this.gridGraphics.setDepth(50);
 
     this.cursorHighlight = this.add.rectangle(0, 0, TILE_SIZE, TILE_SIZE, 0xffffff, 0.25);
-    this.cursorHighlight.setScrollFactor(0);
     this.cursorHighlight.setDepth(51);
     this.cursorHighlight.setVisible(false);
 
@@ -373,10 +372,13 @@ export class LevelEditorScene extends Phaser.Scene {
 
   // ─── Input Handling ──────────────────────────────────────────────────────────
 
+  private getWorldPointAtPointer(ptr: Phaser.Input.Pointer): { worldX: number; worldY: number } {
+    const point = this.cameras.main.getWorldPoint(ptr.x, ptr.y);
+    return { worldX: point.x, worldY: point.y };
+  }
+
   private getTileAtPointer(ptr: Phaser.Input.Pointer): { col: number; row: number } {
-    const cam = this.cameras.main;
-    const worldX = cam.scrollX + ptr.x / cam.zoom;
-    const worldY = cam.scrollY + ptr.y / cam.zoom;
+    const { worldX, worldY } = this.getWorldPointAtPointer(ptr);
     return { col: Math.floor(worldX / TILE_SIZE), row: Math.floor(worldY / TILE_SIZE) };
   }
 
@@ -392,8 +394,8 @@ export class LevelEditorScene extends Phaser.Scene {
         this.tileData[row][col] = T.EMPTY;
         this.groundLayer.putTileAt(-1, col, row);
       }
-      const worldX = Math.round(this.cameras.main.scrollX + ptr.x / this.cameras.main.zoom);
-      this.removeNearestEntity(worldX);
+      const { worldX } = this.getWorldPointAtPointer(ptr);
+      this.removeNearestEntity(Math.round(worldX));
       return;
     }
 
@@ -473,16 +475,11 @@ export class LevelEditorScene extends Phaser.Scene {
     const { col, row } = this.getTileAtPointer(ptr);
     const cfg = this.editableConfig;
     if (!cfg) return;
-    const cam = this.cameras.main;
-    const zoom = cam.zoom;
 
     if (col >= 0 && col < cfg.mapWidthTiles && row >= 0 && row < cfg.mapHeightTiles) {
-      const sx = (col * TILE_SIZE - cam.scrollX) * zoom;
-      const sy = (row * TILE_SIZE - cam.scrollY) * zoom;
-      const size = TILE_SIZE * zoom;
       this.cursorHighlight
-        .setPosition(sx + size / 2, sy + size / 2)
-        .setSize(size, size)
+        .setPosition(col * TILE_SIZE + TILE_SIZE / 2, row * TILE_SIZE + TILE_SIZE / 2)
+        .setSize(TILE_SIZE, TILE_SIZE)
         .setVisible(true);
     } else {
       this.cursorHighlight.setVisible(false);
@@ -492,9 +489,8 @@ export class LevelEditorScene extends Phaser.Scene {
   private updateCursorInfo(ptr: Phaser.Input.Pointer): void {
     if (!this.cursorInfoEl) return;
     const { col, row } = this.getTileAtPointer(ptr);
-    const worldX = Math.round(this.cameras.main.scrollX + ptr.x / this.cameras.main.zoom);
-    const worldY = Math.round(this.cameras.main.scrollY + ptr.y / this.cameras.main.zoom);
-    this.cursorInfoEl.textContent = `Tile: ${col},${row}   Px: ${worldX},${worldY}`;
+    const { worldX, worldY } = this.getWorldPointAtPointer(ptr);
+    this.cursorInfoEl.textContent = `Tile: ${col},${row}   Px: ${Math.round(worldX)},${Math.round(worldY)}`;
   }
 
   // ─── Update Loop ─────────────────────────────────────────────────────────────

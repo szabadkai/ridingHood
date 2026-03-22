@@ -8,6 +8,10 @@ export interface EnemyConfig {
   acceleration: number;
   bodyWidth: number;
   bodyHeight: number;
+  /** Distance at which enemy notices the player and gives chase */
+  aggroRange?: number;
+  /** Speed multiplier when chasing (default 1.6) */
+  chaseSpeedMult?: number;
 }
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
@@ -15,6 +19,8 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   protected currentHealth: number;
   protected direction: number = 1;
   protected isAlive: boolean = true;
+  protected playerRef: Phaser.Physics.Arcade.Sprite | null = null;
+  protected isChasing: boolean = false;
 
   // Patrol ray — we'll check for edges manually
   private edgeCheckOffset: number = 8;
@@ -46,6 +52,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     body.setMaxVelocityY(400);
   }
 
+  setPlayerRef(player: Phaser.Physics.Arcade.Sprite): void {
+    this.playerRef = player;
+  }
+
   update(_time: number, delta: number): void {
     if (!this.isAlive) return;
 
@@ -53,17 +63,35 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     const dt = delta / 1000;
     const onFloor = body.blocked.down;
 
-    // Patrol AI: flip at walls or edges
+    // Check for player aggro
+    const aggroRange = this.config.aggroRange ?? 0;
+    if (aggroRange > 0 && this.playerRef && onFloor) {
+      const dx = this.playerRef.x - this.x;
+      const dist = Math.abs(dx);
+
+      if (dist < aggroRange) {
+        // Chase the player
+        this.isChasing = true;
+        this.direction = dx > 0 ? 1 : -1;
+      } else {
+        this.isChasing = false;
+      }
+    }
+
+    // Patrol AI: flip at walls or edges (only when patrolling, not chasing)
     if (onFloor) {
       if (body.blocked.left || body.blocked.right) {
-        this.flip();
+        if (!this.isChasing) {
+          this.flip();
+        }
       }
-      // Edge detection — check if ground ahead exists
+      // Edge detection — don't walk off ledges even when chasing
       this.checkEdge();
     }
 
-    // Movement
-    const targetVx = this.config.speed * this.direction;
+    // Movement — faster when chasing
+    const speedMult = this.isChasing ? (this.config.chaseSpeedMult ?? 1.6) : 1.0;
+    const targetVx = this.config.speed * speedMult * this.direction;
     const accel = this.config.acceleration * dt;
     if (Math.abs(body.velocity.x - targetVx) < accel) {
       body.velocity.x = targetVx;
@@ -76,7 +104,6 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
   }
 
   private checkEdge(): void {
-    const body = this.body as Phaser.Physics.Arcade.Body;
     // Check if there's ground ahead by looking at the tilemap
     const aheadX = this.x + this.edgeCheckOffset * this.direction;
     const belowY = this.y + 4; // slightly below feet
@@ -86,7 +113,14 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     const tile = layer.getTileAtWorldXY(aheadX, belowY);
     if (!tile) {
-      this.flip();
+      // Stop at edges even when chasing — orcs aren't suicidal
+      if (this.isChasing) {
+        const body = this.body as Phaser.Physics.Arcade.Body;
+        body.velocity.x = 0;
+        this.isChasing = false;
+      } else {
+        this.flip();
+      }
     }
   }
 
@@ -109,6 +143,12 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
 
     // Red flash
     this.flashEffect();
+
+    // Getting hit makes the enemy aggro
+    this.isChasing = true;
+    if (this.playerRef) {
+      this.direction = this.playerRef.x > this.x ? 1 : -1;
+    }
 
     if (this.currentHealth <= 0) {
       this.die();

@@ -10,6 +10,8 @@ export class Orc extends Enemy {
       acceleration: ENEMY.ORC_ACCELERATION * 100,
       bodyWidth: 12,
       bodyHeight: 20,
+      aggroRange: 90,
+      chaseSpeedMult: 1.6,
     });
 
     this.play('orc_walk');

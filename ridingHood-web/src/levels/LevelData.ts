@@ -53,43 +53,34 @@ export interface LevelConfig {
 }
 
 export const LEVELS: LevelConfig[] = [
-  // Level 1: Dark Forest — introductory, gentle platforming
+  // ─────────────────────────────────────────────────────────────────
+  // Level 1: Dark Forest — gentle intro, teaches basic movement
+  //   Short, open, few enemies, no walls. Ease the player in.
+  // ─────────────────────────────────────────────────────────────────
   {
     name: 'Dark Forest',
-    mapWidthTiles: 125,
+    mapWidthTiles: 100,
     mapHeightTiles: 12,
     platforms: [
-      { x: 5, y: 7, width: 3 },
-      { x: 10, y: 6, width: 3 },
-      { x: 15, y: 5, width: 3 },
-      { x: 20, y: 7, width: 4 },
-      { x: 26, y: 6, width: 3 },
-      { x: 31, y: 7, width: 3 },
-      { x: 36, y: 5, width: 4 },
-      { x: 42, y: 6, width: 3 },
-      { x: 57, y: 5, width: 3 },
-      { x: 62, y: 4, width: 3 },
-      { x: 67, y: 6, width: 4 },
-      { x: 73, y: 5, width: 3 },
-      { x: 79, y: 7, width: 3 },
-      { x: 85, y: 3, width: 2 },
-      { x: 90, y: 4, width: 3 },
-      { x: 96, y: 3, width: 2 },
-      { x: 102, y: 5, width: 4 },
-      { x: 110, y: 4, width: 3 },
-      { x: 117, y: 6, width: 4 },
+      { x: 8, y: 7, width: 3 },
+      { x: 15, y: 6, width: 4 },
+      { x: 25, y: 7, width: 3 },
+      { x: 35, y: 5, width: 3 },
+      { x: 45, y: 6, width: 4 },
+      { x: 55, y: 7, width: 3 },
+      { x: 65, y: 5, width: 3 },
+      { x: 75, y: 6, width: 4 },
     ],
-    walls: [
-      { x: 32, yTop: 7, yBot: 9 },
-      { x: 44, yTop: 6, yBot: 9 },
+    walls: [],  // no walls in the intro level
+    gaps: [
+      { start: 42, end: 43 },  // one small gap to teach jumping
     ],
-    gaps: [{ start: 52, end: 55 }],
-    orcPositions: [80, 140, 220, 320, 400, 500, 600, 700, 900, 1050, 1200, 1400, 1550],
-    bossX: 1750,
-    bossArenaWallCol: 105,
-    checkpointPositions: [350, 750, 1300],
-    foodPositions: [120, 280, 450, 650, 850, 1100, 1400, 1600],
-    essencePositions: [200, 550, 950, 1250, 1700],
+    orcPositions: [200, 400, 580, 760, 1000, 1200],
+    bossX: 1400,
+    bossArenaWallCol: 82,
+    checkpointPositions: [500, 960],
+    foodPositions: [150, 350, 700, 1100],
+    essencePositions: [300, 850],
     playerSpawnX: 40,
     parallaxLayers: [
       { key: 'forest_bg1', path: 'assets/backgrounds/forest/1.png', scrollSpeed: 0.05 },
@@ -111,49 +102,42 @@ export const LEVELS: LevelConfig[] = [
     stoneColor: 0x555555,
   },
 
-  // Level 2: Abandoned Village — more gaps, denser enemies
+  // ─────────────────────────────────────────────────────────────────
+  // Level 2: Abandoned Village — introduces gaps and walls
+  //   More gaps to jump, first walls to navigate around.
+  //   Enemies placed to guard narrow passages.
+  // ─────────────────────────────────────────────────────────────────
   {
     name: 'Abandoned Village',
-    mapWidthTiles: 140,
+    mapWidthTiles: 120,
     mapHeightTiles: 12,
     platforms: [
-      { x: 8, y: 7, width: 4 },
-      { x: 14, y: 5, width: 3 },
-      { x: 20, y: 6, width: 5 },
-      { x: 28, y: 4, width: 3 },
-      { x: 34, y: 7, width: 3 },
-      { x: 40, y: 5, width: 4 },
-      { x: 48, y: 3, width: 3 },
-      { x: 55, y: 6, width: 4 },
-      { x: 63, y: 4, width: 3 },
-      { x: 70, y: 7, width: 5 },
-      { x: 78, y: 5, width: 3 },
-      { x: 84, y: 3, width: 4 },
-      { x: 92, y: 6, width: 3 },
-      { x: 98, y: 4, width: 4 },
-      { x: 106, y: 7, width: 3 },
-      { x: 112, y: 5, width: 4 },
-      { x: 125, y: 4, width: 3 },
-      { x: 132, y: 6, width: 4 },
+      { x: 10, y: 7, width: 3 },
+      { x: 18, y: 5, width: 4 },
+      { x: 30, y: 6, width: 3 },
+      { x: 40, y: 4, width: 3 },
+      { x: 52, y: 7, width: 4 },
+      { x: 62, y: 5, width: 3 },
+      { x: 72, y: 6, width: 4 },
+      { x: 82, y: 4, width: 3 },
+      { x: 95, y: 5, width: 3 },
+      { x: 105, y: 7, width: 4 },
     ],
     walls: [
-      { x: 25, yTop: 5, yBot: 9 },
-      { x: 46, yTop: 4, yBot: 9 },
-      { x: 68, yTop: 6, yBot: 9 },
-      { x: 90, yTop: 5, yBot: 9 },
+      { x: 35, yTop: 7, yBot: 9 },  // short wall, jumpable
+      { x: 68, yTop: 6, yBot: 9 },  // medium wall, needs platform
     ],
     gaps: [
-      { start: 16, end: 18 },
-      { start: 43, end: 46 },
-      { start: 75, end: 77 },
-      { start: 102, end: 104 },
+      { start: 25, end: 27 },
+      { start: 57, end: 59 },
+      { start: 88, end: 90 },
     ],
-    orcPositions: [60, 120, 180, 250, 330, 420, 520, 620, 730, 840, 950, 1060, 1170, 1300, 1450, 1600],
-    bossX: 2080,
-    bossArenaWallCol: 120,
-    checkpointPositions: [300, 700, 1100, 1500],
-    foodPositions: [100, 240, 400, 560, 720, 880, 1050, 1250, 1450, 1700],
-    essencePositions: [180, 500, 800, 1150, 1550, 1850],
+    orcPositions: [160, 340, 500, 650, 820, 1050, 1350, 1550],
+    bossX: 1750,
+    bossArenaWallCol: 102,
+    checkpointPositions: [430, 900],
+    foodPositions: [120, 320, 600, 800, 1200, 1500],
+    essencePositions: [250, 700, 1100],
     playerSpawnX: 40,
     parallaxLayers: [
       { key: 'village_bg1', path: 'assets/backgrounds/village/1.png', scrollSpeed: 0.03 },
@@ -174,52 +158,47 @@ export const LEVELS: LevelConfig[] = [
     stoneColor: 0x5a4a3a,
   },
 
-  // Level 3: Huntsman's Castle — tight corridors, lots of walls
+  // ─────────────────────────────────────────────────────────────────
+  // Level 3: Huntsman's Castle — tight corridors, wall-heavy
+  //   Defined by walls creating corridors. Enemies guard doorways.
+  //   Fewer gaps but more vertical navigation via platforms over walls.
+  // ─────────────────────────────────────────────────────────────────
   {
     name: "Huntsman's Castle",
-    mapWidthTiles: 150,
+    mapWidthTiles: 130,
     mapHeightTiles: 12,
     platforms: [
-      { x: 6, y: 6, width: 3 },
-      { x: 12, y: 4, width: 4 },
-      { x: 19, y: 7, width: 3 },
-      { x: 25, y: 3, width: 3 },
-      { x: 32, y: 5, width: 5 },
-      { x: 42, y: 7, width: 3 },
-      { x: 50, y: 4, width: 4 },
-      { x: 58, y: 6, width: 3 },
-      { x: 66, y: 3, width: 3 },
-      { x: 72, y: 7, width: 4 },
+      // Platforms placed to let you get over each wall
+      { x: 14, y: 4, width: 3 },   // over wall at 18
+      { x: 20, y: 6, width: 3 },
+      { x: 32, y: 5, width: 4 },
+      { x: 40, y: 3, width: 3 },   // over wall at 43
+      { x: 46, y: 5, width: 3 },
+      { x: 56, y: 4, width: 3 },
+      { x: 64, y: 6, width: 4 },   // over wall at 68
+      { x: 72, y: 3, width: 3 },
       { x: 80, y: 5, width: 3 },
-      { x: 88, y: 3, width: 4 },
-      { x: 95, y: 6, width: 5 },
-      { x: 104, y: 4, width: 3 },
-      { x: 112, y: 7, width: 4 },
-      { x: 120, y: 5, width: 3 },
-      { x: 135, y: 4, width: 3 },
-      { x: 142, y: 6, width: 4 },
+      { x: 88, y: 4, width: 4 },   // over wall at 92
+      { x: 96, y: 6, width: 3 },
+      { x: 108, y: 5, width: 3 },
+      { x: 118, y: 6, width: 4 },
     ],
     walls: [
-      { x: 16, yTop: 3, yBot: 9 },
-      { x: 29, yTop: 4, yBot: 9 },
-      { x: 39, yTop: 5, yBot: 9 },
-      { x: 55, yTop: 3, yBot: 9 },
-      { x: 69, yTop: 4, yBot: 9 },
-      { x: 85, yTop: 3, yBot: 9 },
-      { x: 101, yTop: 5, yBot: 9 },
-      { x: 117, yTop: 4, yBot: 9 },
+      { x: 18, yTop: 5, yBot: 9 },   // must platform over
+      { x: 43, yTop: 4, yBot: 9 },   // taller, need higher platform
+      { x: 68, yTop: 5, yBot: 9 },
+      { x: 92, yTop: 4, yBot: 9 },
     ],
     gaps: [
-      { start: 36, end: 38 },
-      { start: 62, end: 64 },
-      { start: 92, end: 94 },
+      { start: 50, end: 52 },
+      { start: 76, end: 78 },
     ],
-    orcPositions: [50, 100, 160, 220, 300, 380, 460, 550, 640, 740, 830, 920, 1020, 1120, 1220, 1350, 1500, 1650],
-    bossX: 2100,
-    bossArenaWallCol: 130,
-    checkpointPositions: [250, 600, 1000, 1400, 1800],
-    foodPositions: [80, 200, 350, 500, 670, 800, 970, 1150, 1350, 1550, 1750, 1950],
-    essencePositions: [150, 450, 750, 1050, 1400, 1700, 2050],
+    orcPositions: [130, 300, 480, 640, 830, 1000, 1200, 1500, 1700],
+    bossX: 1900,
+    bossArenaWallCol: 112,
+    checkpointPositions: [380, 750, 1150],
+    foodPositions: [100, 350, 560, 900, 1100, 1400],
+    essencePositions: [220, 700, 1050, 1600],
     playerSpawnX: 30,
     parallaxLayers: [
       { key: 'castle_bg1', path: 'assets/backgrounds/castle/1.png', scrollSpeed: 0.03 },
@@ -238,59 +217,57 @@ export const LEVELS: LevelConfig[] = [
     stoneColor: 0x4a4a5a,
   },
 
-  // Level 4: Grandmother's Tower — vertical focus, many platforms, narrow ground
+  // ─────────────────────────────────────────────────────────────────
+  // Level 4: Grandmother's Tower — vertical platforming focus
+  //   Dense platform stacking, frequent gaps, few walls.
+  //   Tests precision jumping. Enemies on platforms, not just ground.
+  // ─────────────────────────────────────────────────────────────────
   {
     name: "Grandmother's Tower",
-    mapWidthTiles: 130,
+    mapWidthTiles: 110,
     mapHeightTiles: 12,
     platforms: [
-      // Dense vertical platforming sections
-      { x: 5, y: 8, width: 2 },
-      { x: 8, y: 6, width: 2 },
-      { x: 11, y: 4, width: 2 },
-      { x: 14, y: 2, width: 3 },
-      { x: 20, y: 5, width: 3 },
-      { x: 25, y: 3, width: 2 },
-      { x: 28, y: 7, width: 3 },
-      { x: 33, y: 5, width: 2 },
-      { x: 36, y: 3, width: 2 },
-      { x: 40, y: 6, width: 3 },
-      { x: 45, y: 4, width: 2 },
-      { x: 48, y: 2, width: 3 },
-      { x: 54, y: 7, width: 2 },
-      { x: 57, y: 5, width: 2 },
-      { x: 60, y: 3, width: 3 },
-      { x: 65, y: 6, width: 2 },
-      { x: 68, y: 4, width: 2 },
-      { x: 72, y: 7, width: 3 },
-      { x: 76, y: 5, width: 2 },
-      { x: 80, y: 3, width: 3 },
-      { x: 85, y: 6, width: 2 },
-      { x: 88, y: 4, width: 2 },
-      { x: 92, y: 7, width: 3 },
-      { x: 96, y: 5, width: 2 },
-      { x: 100, y: 3, width: 3 },
-      { x: 115, y: 5, width: 3 },
-      { x: 122, y: 6, width: 4 },
+      // Staircase sections
+      { x: 6, y: 8, width: 2 },
+      { x: 9, y: 6, width: 2 },
+      { x: 12, y: 4, width: 2 },
+      { x: 15, y: 2, width: 3 },
+      // Open run
+      { x: 24, y: 6, width: 5 },
+      // Another staircase
+      { x: 35, y: 7, width: 2 },
+      { x: 38, y: 5, width: 2 },
+      { x: 41, y: 3, width: 2 },
+      // Mid-air bridge
+      { x: 48, y: 5, width: 6 },
+      // Descent
+      { x: 58, y: 3, width: 2 },
+      { x: 61, y: 5, width: 2 },
+      { x: 64, y: 7, width: 3 },
+      // Final gauntlet
+      { x: 72, y: 4, width: 3 },
+      { x: 78, y: 6, width: 2 },
+      { x: 82, y: 3, width: 3 },
+      { x: 88, y: 5, width: 3 },
+      { x: 96, y: 6, width: 4 },
     ],
     walls: [
-      { x: 18, yTop: 3, yBot: 9 },
-      { x: 42, yTop: 4, yBot: 9 },
-      { x: 63, yTop: 3, yBot: 9 },
-      { x: 83, yTop: 4, yBot: 9 },
+      { x: 30, yTop: 6, yBot: 9 },  // short, forces platforming
     ],
     gaps: [
-      { start: 22, end: 24 },
-      { start: 50, end: 53 },
-      { start: 73, end: 75 },
-      { start: 93, end: 95 },
+      { start: 20, end: 22 },
+      { start: 33, end: 34 },
+      { start: 45, end: 47 },
+      { start: 56, end: 57 },
+      { start: 69, end: 71 },
+      { start: 85, end: 86 },
     ],
-    orcPositions: [50, 110, 170, 240, 310, 380, 460, 540, 630, 720, 810, 900, 1000, 1100, 1250, 1400],
-    bossX: 1800,
-    bossArenaWallCol: 110,
-    checkpointPositions: [200, 500, 800, 1150],
-    foodPositions: [80, 180, 320, 470, 600, 750, 900, 1050, 1200, 1380, 1600],
-    essencePositions: [150, 400, 700, 1000, 1350, 1750],
+    orcPositions: [160, 390, 550, 770, 1020, 1250, 1430],
+    bossX: 1600,
+    bossArenaWallCol: 92,
+    checkpointPositions: [370, 780],
+    foodPositions: [100, 300, 530, 750, 1000, 1300],
+    essencePositions: [200, 600, 1100],
     playerSpawnX: 30,
     parallaxLayers: [
       { key: 'tower_bg1', path: 'assets/backgrounds/tower/1.png', scrollSpeed: 0.05 },
@@ -308,64 +285,58 @@ export const LEVELS: LevelConfig[] = [
     stoneColor: 0x504050,
   },
 
-  // Level 5: The Abyss — shadow realm, maximum challenge
+  // ─────────────────────────────────────────────────────────────────
+  // Level 5: The Abyss — shadow realm, everything at once
+  //   Long, punishing. Big gaps, tall walls, dense enemies.
+  //   The darkness meter matters here — need dark form to survive.
+  // ─────────────────────────────────────────────────────────────────
   {
     name: 'The Abyss',
-    mapWidthTiles: 160,
+    mapWidthTiles: 145,
     mapHeightTiles: 12,
     platforms: [
-      { x: 6, y: 7, width: 3 },
-      { x: 12, y: 5, width: 2 },
-      { x: 16, y: 3, width: 2 },
-      { x: 22, y: 6, width: 3 },
-      { x: 28, y: 4, width: 2 },
-      { x: 33, y: 7, width: 3 },
-      { x: 38, y: 2, width: 3 },
-      { x: 45, y: 5, width: 2 },
-      { x: 50, y: 7, width: 3 },
-      { x: 56, y: 3, width: 2 },
-      { x: 62, y: 6, width: 3 },
-      { x: 68, y: 4, width: 2 },
-      { x: 74, y: 7, width: 3 },
-      { x: 80, y: 2, width: 3 },
-      { x: 86, y: 5, width: 2 },
-      { x: 92, y: 7, width: 3 },
-      { x: 98, y: 3, width: 2 },
-      { x: 104, y: 6, width: 3 },
-      { x: 110, y: 4, width: 2 },
-      { x: 116, y: 7, width: 3 },
-      { x: 122, y: 2, width: 3 },
-      { x: 128, y: 5, width: 2 },
-      { x: 145, y: 4, width: 3 },
-      { x: 152, y: 6, width: 4 },
+      { x: 8, y: 6, width: 3 },
+      { x: 16, y: 4, width: 2 },
+      { x: 22, y: 7, width: 3 },
+      { x: 30, y: 3, width: 3 },   // high platform over wall at 34
+      { x: 38, y: 5, width: 3 },
+      { x: 46, y: 7, width: 2 },
+      { x: 50, y: 4, width: 3 },   // over wall at 54
+      { x: 58, y: 6, width: 3 },
+      { x: 66, y: 3, width: 3 },
+      { x: 74, y: 5, width: 2 },
+      { x: 78, y: 7, width: 3 },   // over wall at 82
+      { x: 84, y: 3, width: 3 },
+      { x: 92, y: 5, width: 2 },
+      { x: 98, y: 7, width: 3 },
+      { x: 104, y: 4, width: 3 },  // over wall at 108
+      { x: 112, y: 6, width: 2 },
+      { x: 118, y: 3, width: 3 },
+      { x: 130, y: 5, width: 3 },
+      { x: 137, y: 6, width: 4 },
     ],
     walls: [
-      { x: 20, yTop: 3, yBot: 9 },
-      { x: 36, yTop: 2, yBot: 9 },
-      { x: 54, yTop: 3, yBot: 9 },
-      { x: 72, yTop: 4, yBot: 9 },
-      { x: 90, yTop: 3, yBot: 9 },
+      { x: 34, yTop: 4, yBot: 9 },
+      { x: 54, yTop: 4, yBot: 9 },
+      { x: 82, yTop: 4, yBot: 9 },
       { x: 108, yTop: 4, yBot: 9 },
-      { x: 126, yTop: 2, yBot: 9 },
     ],
     gaps: [
-      { start: 14, end: 15 },
-      { start: 30, end: 32 },
-      { start: 47, end: 49 },
-      { start: 64, end: 67 },
-      { start: 83, end: 85 },
-      { start: 100, end: 102 },
-      { start: 118, end: 121 },
+      { start: 12, end: 14 },
+      { start: 26, end: 28 },
+      { start: 42, end: 45 },    // wide gap — needs dark form dash
+      { start: 62, end: 64 },
+      { start: 88, end: 91 },    // wide gap
+      { start: 114, end: 117 },  // wide gap
     ],
     orcPositions: [
-      50, 100, 150, 210, 280, 350, 420, 500, 580, 660, 750, 840, 930,
-      1020, 1110, 1200, 1300, 1400, 1500, 1650, 1800, 1950,
+      100, 250, 380, 500, 620, 780, 940, 1100, 1300, 1500, 1700, 1900,
     ],
-    bossX: 2300,
-    bossArenaWallCol: 140,
-    checkpointPositions: [300, 650, 1050, 1500, 1900],
-    foodPositions: [80, 200, 340, 480, 620, 780, 940, 1100, 1280, 1450, 1650, 1850, 2050, 2200],
-    essencePositions: [150, 400, 700, 1000, 1350, 1700, 2100, 2250],
+    bossX: 2100,
+    bossArenaWallCol: 126,
+    checkpointPositions: [350, 750, 1250],
+    foodPositions: [80, 280, 480, 720, 1000, 1350, 1650, 1850],
+    essencePositions: [180, 550, 900, 1200, 1550, 2050],
     playerSpawnX: 30,
     parallaxLayers: [
       { key: 'abyss_bg1', path: 'assets/backgrounds/abyss/1.png', scrollSpeed: 0.02 },

@@ -239,11 +239,23 @@ export class GameScene extends Phaser.Scene {
     });
   }
 
+  /** Check if a pixel X position falls over a gap */
+  private isOverGap(xPixel: number): boolean {
+    const col = Math.floor(xPixel / TILE_SIZE);
+    for (const gap of this.lvl.gaps) {
+      if (col >= gap.start && col <= gap.end) return true;
+    }
+    return false;
+  }
+
   private spawnEnemies(): void {
     const groundY = (this.lvl.mapHeightTiles - 2) * TILE_SIZE;
 
     for (const xPos of this.lvl.orcPositions) {
+      // Don't spawn enemies over chasms
+      if (this.isOverGap(xPos)) continue;
       const orc = new Orc(this, xPos, groundY);
+      orc.setPlayerRef(this.player);
       this.enemies.add(orc as unknown as Phaser.GameObjects.GameObject);
     }
 
@@ -262,6 +274,8 @@ export class GameScene extends Phaser.Scene {
     const groundY = (this.lvl.mapHeightTiles - 2) * TILE_SIZE;
 
     for (const xPos of this.lvl.checkpointPositions) {
+      // Never spawn checkpoints over chasms
+      if (this.isOverGap(xPos)) continue;
       const cp = new Checkpoint(this, xPos, groundY);
       this.checkpoints.add(cp as unknown as Phaser.GameObjects.GameObject);
     }
@@ -271,11 +285,13 @@ export class GameScene extends Phaser.Scene {
     const groundY = (this.lvl.mapHeightTiles - 2) * TILE_SIZE;
 
     for (const xPos of this.lvl.foodPositions) {
+      if (this.isOverGap(xPos)) continue;
       const food = new Pickup(this, xPos, groundY - 8, 'food', 'pickup_food');
       this.pickups.add(food as unknown as Phaser.GameObjects.GameObject);
     }
 
     for (const xPos of this.lvl.essencePositions) {
+      if (this.isOverGap(xPos)) continue;
       const essence = new Pickup(this, xPos, groundY - 8, 'wolf_essence', 'pickup_wolf_essence');
       this.pickups.add(essence as unknown as Phaser.GameObjects.GameObject);
     }
