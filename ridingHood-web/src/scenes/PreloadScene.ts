@@ -134,33 +134,111 @@ export class PreloadScene extends Phaser.Scene {
   }
 
   private registerEnemyAnimations(): void {
-    // Extract orc walk frames from the dungeon tileset (0x72)
-    // Walk frames: 7 frames, each 21x30, at y=386
-    // x positions: 22, 54, 86, 150, 182, 214, 246
-    const orcWalkPositions = [22, 54, 86, 150, 182, 214, 246];
     const src = this.textures.get('dungeon_tileset').getSourceImage() as HTMLImageElement;
 
-    for (let i = 0; i < orcWalkPositions.length; i++) {
-      const canvas = document.createElement('canvas');
-      canvas.width = 21;
-      canvas.height = 30;
-      const ctx = canvas.getContext('2d')!;
-      ctx.drawImage(src, orcWalkPositions[i], 386, 21, 30, 0, 0, 21, 30);
-      this.textures.addCanvas(`orc_walk_${i}`, canvas);
-    }
+    // ── Helper: extract frames from tileset and create walk animation ──
+    const extractWalkAnim = (
+      key: string,
+      positions: { x: number; y: number; w: number; h: number }[],
+      frameRate: number = 10,
+    ) => {
+      for (let i = 0; i < positions.length; i++) {
+        const p = positions[i];
+        const canvas = document.createElement('canvas');
+        canvas.width = p.w;
+        canvas.height = p.h;
+        canvas.getContext('2d')!.drawImage(src, p.x, p.y, p.w, p.h, 0, 0, p.w, p.h);
+        this.textures.addCanvas(`${key}_${i}`, canvas);
+      }
+      this.anims.create({
+        key,
+        frames: positions.map((_, i) => ({ key: `${key}_${i}` })),
+        frameRate,
+        repeat: -1,
+      });
+    };
 
-    this.anims.create({
-      key: 'orc_walk',
-      frames: orcWalkPositions.map((_, i) => ({ key: `orc_walk_${i}` })),
-      frameRate: 10,
-      repeat: -1,
-    });
+    // ────────────────────────────────────────────────────────────────
+    // ORC — 7 walk frames at y=386, 21x30 (confirmed)
+    // ────────────────────────────────────────────────────────────────
+    const orcXs = [22, 54, 86, 150, 182, 214, 246];
+    extractWalkAnim(
+      'orc_walk',
+      orcXs.map(x => ({ x, y: 386, w: 21, h: 30 })),
+      10,
+    );
 
-    // Extract orc death frames from metroidvania tileset
-    // Death frames: 9 frames at 16x16
-    // Row 1 (y=32): x=0, x=16, x=32
-    // Row 2 (y=48): x=0, x=16, x=32
-    // Row 3 (y=64): x=0, x=16, x=32
+    // ────────────────────────────────────────────────────────────────
+    // CHARACTER ROWS (pixel-scanned coordinates from tileset)
+    // Row layout: 4 idle + 4 run frames, 16px grid, run starts at x≈192
+    // ────────────────────────────────────────────────────────────────
+
+    // Knight (blue armor) — y=70-95, h=26, run frames at x=192+
+    extractWalkAnim(
+      'knight_walk',
+      [192, 208, 224, 240].map(x => ({ x, y: 70, w: 15, h: 26 })),
+      10,
+    );
+
+    // Elf (green/blonde) — y=105-127, h=23
+    extractWalkAnim(
+      'elf_walk',
+      [192, 208, 224, 240].map(x => ({ x, y: 105, w: 15, h: 23 })),
+      12,
+    );
+
+    // Wizard (blue robe) — y=138-159, h=22
+    extractWalkAnim(
+      'wizard_walk',
+      [192, 208, 224, 240].map(x => ({ x, y: 138, w: 15, h: 22 })),
+      8,
+    );
+
+    // Lizard (green reptile) — y=168-191, h=24, run frames at x=193+
+    extractWalkAnim(
+      'lizard_walk',
+      [193, 209, 225, 241].map(x => ({ x, y: 168, w: 15, h: 24 })),
+      12,
+    );
+
+    // Big Zombie (teal, runs) — y=202-223, h=22
+    extractWalkAnim(
+      'bigzombie_walk',
+      [193, 209, 225, 241].map(x => ({ x, y: 202, w: 15, h: 22 })),
+      8,
+    );
+
+    // Ogre (brown/tan) — y=235-255, h=21
+    extractWalkAnim(
+      'ogre_walk',
+      [193, 209, 225, 241].map(x => ({ x, y: 235, w: 15, h: 21 })),
+      7,
+    );
+
+    // Imp (dark, quick) — y=264-287, h=24
+    extractWalkAnim(
+      'imp_walk',
+      [193, 209, 225, 241].map(x => ({ x, y: 264, w: 14, h: 24 })),
+      10,
+    );
+
+    // Goblin (small, sneaky) — y=296-319, h=24
+    extractWalkAnim(
+      'goblin_walk',
+      [193, 209, 225, 241].map(x => ({ x, y: 296, w: 14, h: 24 })),
+      10,
+    );
+
+    // Skeleton (right-side small chars) — y=274-295, h=22
+    extractWalkAnim(
+      'skeleton_walk',
+      [371, 387, 403, 419].map(x => ({ x, y: 274, w: 11, h: 22 })),
+      10,
+    );
+
+    // ────────────────────────────────────────────────────────────────
+    // GENERIC DEATH — shared puff effect from metroidvania tileset
+    // ────────────────────────────────────────────────────────────────
     const deathPositions = [
       { x: 0, y: 32 }, { x: 16, y: 32 }, { x: 16, y: 48 },
       { x: 0, y: 48 }, { x: 0, y: 64 }, { x: 16, y: 64 },
@@ -184,24 +262,26 @@ export class PreloadScene extends Phaser.Scene {
       repeat: 0,
     });
 
-    // Extract food and wolf essence sprites from food sheet (128x128, 8x8 grid of 16x16)
+    // ────────────────────────────────────────────────────────────────
+    // PICKUPS (food & wolf essence)
+    // ────────────────────────────────────────────────────────────────
     const foodSrc = this.textures.get('food_sheet').getSourceImage() as HTMLImageElement;
 
-    // Apple (row 0, col 0) for food pickup
     const foodCanvas = document.createElement('canvas');
     foodCanvas.width = 16;
     foodCanvas.height = 16;
     foodCanvas.getContext('2d')!.drawImage(foodSrc, 0, 0, 16, 16, 0, 0, 16, 16);
     this.textures.addCanvas('pickup_food', foodCanvas);
 
-    // Purple potion-like item (row 1, col 4) for wolf essence
     const essenceCanvas = document.createElement('canvas');
     essenceCanvas.width = 16;
     essenceCanvas.height = 16;
     essenceCanvas.getContext('2d')!.drawImage(foodSrc, 64, 16, 16, 16, 0, 0, 16, 16);
     this.textures.addCanvas('pickup_wolf_essence', essenceCanvas);
 
-    // Extract boss (demon) sprites from dungeon tileset
+    // ────────────────────────────────────────────────────────────────
+    // BOSS (big demon) sprites
+    // ────────────────────────────────────────────────────────────────
     // Walk: 3 frames at 26x34
     const bossWalkPositions = [
       { x: 149, y: 430, w: 26, h: 34 },

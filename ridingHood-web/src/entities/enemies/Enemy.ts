@@ -12,6 +12,10 @@ export interface EnemyConfig {
   aggroRange?: number;
   /** Speed multiplier when chasing (default 1.6) */
   chaseSpeedMult?: number;
+  /** Walk animation key (default 'orc_walk') */
+  walkAnim?: string;
+  /** Death animation key (default 'orc_death') */
+  deathAnim?: string;
 }
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
@@ -175,9 +179,10 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     body.enable = false;
 
     // Play death animation if available, then destroy
-    if (this.scene.anims.exists('orc_death')) {
+    const deathAnim = this.config.deathAnim ?? 'orc_death';
+    if (this.scene.anims.exists(deathAnim)) {
       this.clearTint();
-      this.play('orc_death');
+      this.play(deathAnim);
       this.once('animationcomplete', () => {
         this.destroy();
       });

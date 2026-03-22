@@ -1,4 +1,5 @@
 // Level configuration data for all 5 levels
+import type { EnemyTypeKey } from '../entities/enemies/EnemyTypes';
 
 export interface PlatformDef {
   x: number;
@@ -31,6 +32,8 @@ export interface LevelConfig {
   walls: WallDef[];
   gaps: GapDef[];
   orcPositions: number[];
+  /** Which enemy types can spawn in this level (randomly picked per position) */
+  enemyTypes: EnemyTypeKey[];
   bossX: number;
   bossArenaWallCol: number;
   checkpointPositions: number[];
@@ -76,6 +79,7 @@ export const LEVELS: LevelConfig[] = [
       { start: 42, end: 43 },  // one small gap to teach jumping
     ],
     orcPositions: [200, 400, 580, 760, 1000, 1200],
+    enemyTypes: ['orc', 'goblin', 'skeleton'],
     bossX: 1400,
     bossArenaWallCol: 82,
     checkpointPositions: [500, 960],
@@ -133,6 +137,7 @@ export const LEVELS: LevelConfig[] = [
       { start: 88, end: 90 },
     ],
     orcPositions: [160, 340, 500, 650, 820, 1050, 1350, 1550],
+    enemyTypes: ['orc', 'goblin', 'imp', 'skeleton'],
     bossX: 1750,
     bossArenaWallCol: 102,
     checkpointPositions: [430, 900],
@@ -194,6 +199,7 @@ export const LEVELS: LevelConfig[] = [
       { start: 76, end: 78 },
     ],
     orcPositions: [130, 300, 480, 640, 830, 1000, 1200, 1500, 1700],
+    enemyTypes: ['knight', 'elf', 'wizard', 'orc', 'imp'],
     bossX: 1900,
     bossArenaWallCol: 112,
     checkpointPositions: [380, 750, 1150],
@@ -202,9 +208,7 @@ export const LEVELS: LevelConfig[] = [
     playerSpawnX: 30,
     parallaxLayers: [
       { key: 'castle_bg1', path: 'assets/backgrounds/castle/1.png', scrollSpeed: 0.03 },
-      { key: 'castle_bg2', path: 'assets/backgrounds/castle/2.png', scrollSpeed: 0.1 },
-      { key: 'castle_bg3', path: 'assets/backgrounds/castle/3.png', scrollSpeed: 0.2 },
-      { key: 'castle_bg4', path: 'assets/backgrounds/castle/4.png', scrollSpeed: 0.35 },
+      { key: 'castle_bg2', path: 'assets/backgrounds/castle/2.png', scrollSpeed: 0.15 },
     ],
     tintColor: 0x222244,
     tintAlpha: 0.4,
@@ -263,6 +267,7 @@ export const LEVELS: LevelConfig[] = [
       { start: 85, end: 86 },
     ],
     orcPositions: [160, 390, 550, 770, 1020, 1250, 1430],
+    enemyTypes: ['lizard', 'knight', 'ogre', 'elf', 'bigZombie'],
     bossX: 1600,
     bossArenaWallCol: 92,
     checkpointPositions: [370, 780],
@@ -332,6 +337,7 @@ export const LEVELS: LevelConfig[] = [
     orcPositions: [
       100, 250, 380, 500, 620, 780, 940, 1100, 1300, 1500, 1700, 1900,
     ],
+    enemyTypes: ['knight', 'wizard', 'ogre', 'bigZombie', 'imp', 'lizard', 'elf', 'skeleton'],
     bossX: 2100,
     bossArenaWallCol: 126,
     checkpointPositions: [350, 750, 1250],
@@ -340,9 +346,8 @@ export const LEVELS: LevelConfig[] = [
     playerSpawnX: 30,
     parallaxLayers: [
       { key: 'abyss_bg1', path: 'assets/backgrounds/abyss/1.png', scrollSpeed: 0.02 },
-      { key: 'abyss_bg2', path: 'assets/backgrounds/abyss/2.png', scrollSpeed: 0.07 },
-      { key: 'abyss_bg3', path: 'assets/backgrounds/abyss/3.png', scrollSpeed: 0.12 },
-      { key: 'abyss_bg4', path: 'assets/backgrounds/abyss/4.png', scrollSpeed: 0.2 },
+      { key: 'abyss_bg2', path: 'assets/backgrounds/abyss/2.png', scrollSpeed: 0.08 },
+      { key: 'abyss_bg4', path: 'assets/backgrounds/abyss/4.png', scrollSpeed: 0.18 },
       { key: 'abyss_bg5', path: 'assets/backgrounds/abyss/5.png', scrollSpeed: 0.35 },
     ],
     tintColor: 0x110022,

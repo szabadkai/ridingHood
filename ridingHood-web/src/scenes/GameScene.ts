@@ -2,8 +2,8 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, DARKNESS_METER } from '../config/GameConfig';
 import { Player } from '../entities/Player';
 import { Enemy } from '../entities/enemies/Enemy';
-import { Orc } from '../entities/enemies/Orc';
 import { WolfKing, getBossConfig } from '../entities/enemies/WolfKing';
+import { createEnemy } from '../entities/enemies/EnemyTypes';
 import { Checkpoint } from '../entities/Checkpoint';
 import { Pickup } from '../entities/Pickup';
 import { CameraManager } from '../systems/CameraManager';
@@ -250,13 +250,17 @@ export class GameScene extends Phaser.Scene {
 
   private spawnEnemies(): void {
     const groundY = (this.lvl.mapHeightTiles - 2) * TILE_SIZE;
+    const types = this.lvl.enemyTypes;
 
-    for (const xPos of this.lvl.orcPositions) {
+    for (let idx = 0; idx < this.lvl.orcPositions.length; idx++) {
+      const xPos = this.lvl.orcPositions[idx];
       // Don't spawn enemies over chasms
       if (this.isOverGap(xPos)) continue;
-      const orc = new Orc(this, xPos, groundY);
-      orc.setPlayerRef(this.player);
-      this.enemies.add(orc as unknown as Phaser.GameObjects.GameObject);
+      // Round-robin through available enemy types for variety
+      const typeKey = types[idx % types.length];
+      const enemy = createEnemy(this, xPos, groundY, typeKey);
+      enemy.setPlayerRef(this.player);
+      this.enemies.add(enemy as unknown as Phaser.GameObjects.GameObject);
     }
 
     // Wolf King boss — spawn centered in the arena for safety
