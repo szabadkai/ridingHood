@@ -1,12 +1,15 @@
 import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT, PLAYER, DARKNESS_METER } from '../config/GameConfig';
 import { EventBus, Events } from '../utils/EventBus';
+import { pixelText } from '../ui/PixelText';
 
 // Persist across scene restarts — only show onboarding once per session
 let hasShownDarkFormOnboarding = false;
 
+const FONT = '"Courier New", Courier, monospace';
+
 export class UIScene extends Phaser.Scene {
-  private hearts: Phaser.GameObjects.Text[] = [];
+  private heartGraphics!: Phaser.GameObjects.Graphics;
   private meterBar!: Phaser.GameObjects.Graphics;
   private meterBg!: Phaser.GameObjects.Graphics;
   private formText!: Phaser.GameObjects.Text;
@@ -17,31 +20,24 @@ export class UIScene extends Phaser.Scene {
   }
 
   create(): void {
-    // Hearts display
-    this.hearts = [];
-    for (let i = 0; i < PLAYER.MAX_HEALTH; i++) {
-      const heart = this.add.text(4 + i * 10, 4, '\u2665', {
-        fontSize: '8px',
-        color: '#cc3333',
-        fontFamily: 'monospace',
-      });
-      this.hearts.push(heart);
-    }
+    // Hearts drawn as pixel graphics
+    this.heartGraphics = this.add.graphics();
+    this.drawHearts(PLAYER.MAX_HEALTH);
 
     // Darkness meter background
     this.meterBg = this.add.graphics();
     this.meterBg.fillStyle(0x222222, 0.8);
-    this.meterBg.fillRect(4, 14, 52, 4);
+    this.meterBg.fillRect(8, 28, 104, 8);
 
     // Darkness meter fill
     this.meterBar = this.add.graphics();
     this.updateMeter(0);
 
     // Form indicator
-    this.formText = this.add.text(58, 13, 'LIGHT', {
-      fontSize: '5px',
-      color: '#ffffff',
-      fontFamily: 'monospace',
+    this.formText = this.add.text(116, 28, 'LIGHT', {
+      fontSize: '12px',
+      color: '#888888',
+      fontFamily: FONT,
     });
 
     // Listen for events
@@ -58,23 +54,37 @@ export class UIScene extends Phaser.Scene {
     });
   }
 
-  private updateHealth = (current: number, _max: number): void => {
-    for (let i = 0; i < this.hearts.length; i++) {
-      this.hearts[i].setColor(i < current ? '#cc3333' : '#333333');
+  private drawHearts(current: number): void {
+    this.heartGraphics.clear();
+    for (let i = 0; i < PLAYER.MAX_HEALTH; i++) {
+      const x = 10 + i * 20;
+      const y = 12;
+      const filled = i < current;
+      this.heartGraphics.fillStyle(filled ? 0xcc3333 : 0x333333, 1);
+      // Pixel heart: 10x8
+      this.heartGraphics.fillRect(x + 2, y, 2, 2);
+      this.heartGraphics.fillRect(x + 6, y, 2, 2);
+      this.heartGraphics.fillRect(x, y + 2, 10, 2);
+      this.heartGraphics.fillRect(x + 2, y + 4, 6, 2);
+      this.heartGraphics.fillRect(x + 4, y + 6, 2, 2);
     }
+  }
+
+  private updateHealth = (current: number, _max: number): void => {
+    this.drawHearts(current);
   };
 
   private updateMeter = (value: number): void => {
     this.meterBar.clear();
-    const fillWidth = (value / DARKNESS_METER.MAX) * 50;
+    const fillWidth = (value / DARKNESS_METER.MAX) * 100;
     const color = value >= DARKNESS_METER.TRANSFORM_THRESHOLD ? 0x9933cc : 0x663399;
     this.meterBar.fillStyle(color, 1);
-    this.meterBar.fillRect(5, 15, fillWidth, 2);
+    this.meterBar.fillRect(10, 30, fillWidth, 4);
   };
 
   private updateForm = (form: 'light' | 'dark'): void => {
     this.formText.setText(form.toUpperCase());
-    this.formText.setColor(form === 'dark' ? '#9933cc' : '#ffffff');
+    this.formText.setColor(form === 'dark' ? '#9933cc' : '#888888');
   };
 
   // ── Dark Form Onboarding Modal ──────────────────────────────
@@ -86,66 +96,46 @@ export class UIScene extends Phaser.Scene {
   };
 
   private showDarkFormModal(): void {
-    // Pause the game scene
     this.scene.pause('GameScene');
 
     const cx = GAME_WIDTH / 2;
     const cy = GAME_HEIGHT / 2;
 
-    // Dim overlay
-    const overlay = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7);
-    overlay.setDepth(100);
+    const overlay = this.add.rectangle(cx, cy, GAME_WIDTH, GAME_HEIGHT, 0x000000, 0.7).setDepth(100);
 
-    // Modal background
-    const modalW = 260;
-    const modalH = 145;
-    const modalBg = this.add.graphics();
-    modalBg.setDepth(101);
-    // Border
-    modalBg.lineStyle(1, 0x9933cc, 1);
+    const modalW = 520;
+    const modalH = 290;
+    const modalBg = this.add.graphics().setDepth(101);
+    modalBg.lineStyle(2, 0x9933cc, 1);
     modalBg.fillStyle(0x1a0a2e, 0.95);
-    modalBg.fillRoundedRect(cx - modalW / 2, cy - modalH / 2, modalW, modalH, 4);
-    modalBg.strokeRoundedRect(cx - modalW / 2, cy - modalH / 2, modalW, modalH, 4);
+    modalBg.fillRoundedRect(cx - modalW / 2, cy - modalH / 2, modalW, modalH, 8);
+    modalBg.strokeRoundedRect(cx - modalW / 2, cy - modalH / 2, modalW, modalH, 8);
 
-    // Title
-    const title = this.add.text(cx, cy - modalH / 2 + 16, 'Dark Riding Hood', {
-      fontSize: '12px',
-      color: '#cc66ff',
-      fontFamily: 'monospace',
-      fontStyle: 'bold',
-    }).setOrigin(0.5).setDepth(102);
+    const title = pixelText(this, cx, cy - modalH / 2 + 32, 'Dark Riding Hood', 'heading', 102);
 
-    // Divider
     const divider = this.add.graphics().setDepth(102);
-    divider.lineStyle(1, 0x663399, 0.5);
-    divider.lineBetween(cx - modalW / 2 + 10, cy - modalH / 2 + 28, cx + modalW / 2 - 10, cy - modalH / 2 + 28);
+    divider.lineStyle(2, 0x663399, 0.5);
+    divider.lineBetween(cx - modalW / 2 + 20, cy - modalH / 2 + 56, cx + modalW / 2 - 20, cy - modalH / 2 + 56);
 
-    // Body text
-    const bodyText = this.add.text(cx, cy - 4, [
+    const bodyText = this.add.text(cx, cy - 8, [
       'Your darkness meter is full!',
       '',
-      'Press [C] to transform into',
+      'Hold [L] to transform into',
       'Dark Riding Hood.',
       '',
       'Stronger attacks & dash ability',
       'but you take 1.5x damage.',
       'Meter drains over time.',
     ].join('\n'), {
-      fontSize: '8px',
+      fontSize: '16px',
       color: '#ccbbdd',
-      fontFamily: 'monospace',
+      fontFamily: FONT,
       align: 'center',
-      lineSpacing: 2,
+      lineSpacing: 4,
     }).setOrigin(0.5).setDepth(102);
 
-    // Dismiss prompt
-    const dismiss = this.add.text(cx, cy + modalH / 2 - 14, '[ Press any key to continue ]', {
-      fontSize: '8px',
-      color: '#9966cc',
-      fontFamily: 'monospace',
-    }).setOrigin(0.5).setDepth(102);
+    const dismiss = pixelText(this, cx, cy + modalH / 2 - 28, '[ Press any key to continue ]', 'accent', 102);
 
-    // Blink the dismiss prompt
     this.tweens.add({
       targets: dismiss,
       alpha: 0.3,
@@ -156,7 +146,6 @@ export class UIScene extends Phaser.Scene {
 
     this.modalGroup = [overlay, modalBg, title, divider, bodyText, dismiss];
 
-    // Dismiss on any key press or mouse click (after a brief delay to avoid instant dismiss)
     this.time.delayedCall(300, () => {
       const dismissHandler = () => {
         this.dismissModal();

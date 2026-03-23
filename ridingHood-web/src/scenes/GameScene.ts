@@ -55,10 +55,12 @@ export class GameScene extends Phaser.Scene {
     this.currentLevel = (this.scene.settings.data as { level?: number })?.level ?? 1;
     this.lvl = getLevelConfig(this.currentLevel);
 
+    this.cameras.main.transparent = true; // Don't clear background so ParallaxBgScene shows through
+
     // Generate tile textures (themed per level)
     this.generateTileTextures();
 
-    // Parallax background
+    // Parallax background (pass zoom=2 directly since camera zoom isn't set yet)
     this.parallaxManager = new ParallaxManager(this);
     this.parallaxManager.create(this.lvl.parallaxLayers);
     this.parallaxManager.setThemeTint(this.lvl.tintColor, this.lvl.tintAlpha);
@@ -170,6 +172,7 @@ export class GameScene extends Phaser.Scene {
 
     // Camera
     this.cameraManager = new CameraManager(this);
+    this.cameras.main.setZoom(2); // 640x360 canvas → 320x180 game view
     this.cameraManager.follow(this.player as unknown as Phaser.GameObjects.GameObject);
     this.cameraManager.setBounds(0, 0, this.lvl.mapWidthTiles * TILE_SIZE, this.lvl.mapHeightTiles * TILE_SIZE);
 
@@ -532,35 +535,45 @@ export class GameScene extends Phaser.Scene {
       // ── Phase 3: Letterbox + boss title card ──
       getSoundManager().crossfadeMusic('music_boss');
 
-      // Letterbox bars
+      // Letterbox bars — scrollFactor(0) with zoom 2.
+      // Phaser zooms from the viewport center (GAME_WIDTH/2, GAME_HEIGHT/2).
+      // For scrollFactor(0), visible world coords go from:
+      //   top-left: (cx - cx/zoom, cy - cy/zoom) to bottom-right: (cx + cx/zoom, cy + cy/zoom)
+      //   i.e. (160, 90) to (480, 270) at zoom 2.
       const cam = this.cameras.main;
-      const barHeight = 24;
-      const topBar = this.add.rectangle(cam.scrollX + GAME_WIDTH / 2, cam.scrollY - barHeight / 2, GAME_WIDTH, barHeight, 0x000000)
+      const zoom = cam.zoom;
+      const cx = GAME_WIDTH / 2;   // 320
+      const cy = GAME_HEIGHT / 2;  // 180
+      const screenTop = cy - cy / zoom;    // 90
+      const screenBot = cy + cy / zoom;    // 270
+      const viewW = GAME_WIDTH / zoom;     // 320
+      const barHeight = 20;
+      const topBar = this.add.rectangle(cx, screenTop - barHeight / 2, viewW + 20, barHeight, 0x000000)
         .setDepth(100).setScrollFactor(0).setOrigin(0.5, 0.5);
-      const botBar = this.add.rectangle(cam.scrollX + GAME_WIDTH / 2, cam.scrollY + GAME_HEIGHT + barHeight / 2, GAME_WIDTH, barHeight, 0x000000)
+      const botBar = this.add.rectangle(cx, screenBot + barHeight / 2, viewW + 20, barHeight, 0x000000)
         .setDepth(100).setScrollFactor(0).setOrigin(0.5, 0.5);
 
       // Slide letterbox bars in
-      this.tweens.add({ targets: topBar, y: cam.scrollY + barHeight / 2, duration: 300, ease: 'Sine.easeOut' });
-      this.tweens.add({ targets: botBar, y: cam.scrollY + GAME_HEIGHT - barHeight / 2, duration: 300, ease: 'Sine.easeOut' });
+      this.tweens.add({ targets: topBar, y: screenTop + barHeight / 2, duration: 300, ease: 'Sine.easeOut' });
+      this.tweens.add({ targets: botBar, y: screenBot - barHeight / 2, duration: 300, ease: 'Sine.easeOut' });
 
       // Boss name title card
       const bossCfg = getBossConfig(this.currentLevel);
-      const titleText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 - 8, bossCfg.name.toUpperCase(), {
-        fontSize: '14px',
+      const titleText = this.add.text(cx, cy - 10, bossCfg.name.toUpperCase(), {
+        fontSize: '12px',
         color: '#ff4444',
-        fontFamily: 'monospace',
+        fontFamily: '"Courier New", Courier, monospace',
         fontStyle: 'bold',
         stroke: '#000000',
-        strokeThickness: 3,
+        strokeThickness: 2,
       }).setOrigin(0.5).setDepth(101).setScrollFactor(0).setAlpha(0);
 
-      const subtitleText = this.add.text(GAME_WIDTH / 2, GAME_HEIGHT / 2 + 8, `Level ${this.currentLevel} Boss`, {
+      const subtitleText = this.add.text(cx, cy + 6, `Level ${this.currentLevel} Boss`, {
         fontSize: '8px',
-        color: '#ffaa88',
-        fontFamily: 'monospace',
+        color: '#ffcc44',
+        fontFamily: '"Courier New", Courier, monospace',
         stroke: '#000000',
-        strokeThickness: 2,
+        strokeThickness: 1,
       }).setOrigin(0.5).setDepth(101).setScrollFactor(0).setAlpha(0);
 
       // Fade in title
@@ -588,8 +601,8 @@ export class GameScene extends Phaser.Scene {
         });
 
         // Slide letterbox bars out
-        this.tweens.add({ targets: topBar, y: cam.scrollY - barHeight / 2, duration: 300, ease: 'Sine.easeIn', onComplete: () => topBar.destroy() });
-        this.tweens.add({ targets: botBar, y: cam.scrollY + GAME_HEIGHT + barHeight / 2, duration: 300, ease: 'Sine.easeIn', onComplete: () => botBar.destroy() });
+        this.tweens.add({ targets: topBar, y: screenTop - barHeight / 2, duration: 300, ease: 'Sine.easeIn', onComplete: () => topBar.destroy() });
+        this.tweens.add({ targets: botBar, y: screenBot + barHeight / 2, duration: 300, ease: 'Sine.easeIn', onComplete: () => botBar.destroy() });
 
         // Lock camera to arena bounds and resume follow
         this.cameraManager.setBounds(arenaLeft, 0, arenaWidth, arenaHeight);

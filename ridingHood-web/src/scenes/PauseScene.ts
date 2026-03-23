@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/GameConfig';
 import { getSoundManager } from '../systems/SoundManager';
 import { COLORS, drawPanel, createMenuButtons, createTitle, createDivider, createOverlay, MenuNav } from '../ui/MenuHelper';
+import { pixelText } from '../ui/PixelText';
 
 export class PauseScene extends Phaser.Scene {
   private nav!: MenuNav;
@@ -21,18 +22,18 @@ export class PauseScene extends Phaser.Scene {
     createOverlay(this, 0x000000, 0.6, 50);
 
     // Panel
-    drawPanel(this, cx, cy, 160, 130, 51);
+    drawPanel(this, cx, cy, 320, 260, 51);
 
     // Title
-    createTitle(this, cx, cy - 48, 'Paused', '12px', COLORS.highlightAlt, 52);
+    createTitle(this, cx, cy - 96, 'Paused', '20px', COLORS.highlightAlt, 52);
 
     // Divider
-    createDivider(this, cy - 34, 120, 52);
+    createDivider(this, cy - 68, 240, 52);
 
-    // All buttons including sound toggle via createMenuButtons for unified nav
+    // Buttons
     const soundLabel = () => `Sound: ${sound.isMuted() ? 'OFF' : 'ON'}`;
 
-    this.nav = createMenuButtons(this, cx, cy - 12, 18, [
+    this.nav = createMenuButtons(this, cx, cy - 24, 36, [
       { label: 'Resume', onClick: () => this.resumeGame() },
       { label: soundLabel(), onClick: () => this.toggleSound() },
       { label: 'Restart Level', onClick: () => this.restartLevel() },
@@ -40,13 +41,9 @@ export class PauseScene extends Phaser.Scene {
     ], 52);
 
     // Controls hint
-    this.add.text(cx, cy + 56, 'ESC resume / M toggle sound', {
-      fontSize: '7px',
-      color: COLORS.textDim,
-      fontFamily: 'monospace',
-    }).setOrigin(0.5).setDepth(52);
+    pixelText(this, cx, cy + 112, 'ESC resume / M toggle sound', 'dim', 52);
 
-    // Extra keyboard shortcuts (ESC/P to resume, M to toggle)
+    // Extra keyboard shortcuts
     this.input.keyboard!.on('keydown-ESC', () => this.resumeGame());
     this.input.keyboard!.on('keydown-P', () => this.resumeGame());
     this.input.keyboard!.on('keydown-M', () => this.toggleSound());
@@ -54,7 +51,6 @@ export class PauseScene extends Phaser.Scene {
 
   private toggleSound(): void {
     const muted = getSoundManager().toggleMute();
-    // Update the sound toggle button label (index 1)
     this.nav.texts[1].setText(`Sound: ${muted ? 'OFF' : 'ON'}`);
   }
 

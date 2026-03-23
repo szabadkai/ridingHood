@@ -95,6 +95,21 @@ export class SoundManager {
     return this.muted;
   }
 
+  getMasterVolume(): number {
+    return this.masterVolume;
+  }
+
+  setMasterVolume(vol: number): void {
+    this.masterVolume = Phaser.Math.Clamp(vol, 0, 1);
+    // Update running music volume
+    if (this.currentMusic && this.currentMusicKey) {
+      const asset = SOUND_ASSETS[this.currentMusicKey as SoundKey];
+      if (asset && 'setVolume' in this.currentMusic) {
+        (this.currentMusic as Phaser.Sound.WebAudioSound).setVolume(asset.volume * this.masterVolume);
+      }
+    }
+  }
+
   // ── Music ───────────────────────────────────────────────────
 
   playMusic(key: 'music_forest' | 'music_boss'): void {

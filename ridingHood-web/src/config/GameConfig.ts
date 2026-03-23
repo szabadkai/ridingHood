@@ -1,7 +1,7 @@
 // Game constants ported from Godot Player.gd and extended for dual-form system
 
-export const GAME_WIDTH = 320;
-export const GAME_HEIGHT = 180;
+export const GAME_WIDTH = 640;
+export const GAME_HEIGHT = 360;
 
 export const PHYSICS = {
   GRAVITY: 700,

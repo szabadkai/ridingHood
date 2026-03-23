@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/GameConfig';
 import { getSoundManager } from '../systems/SoundManager';
 import { COLORS, drawPanel, createMenuButtons, createTitle, createDivider, createOverlay } from '../ui/MenuHelper';
+import { pixelText } from '../ui/PixelText';
 
 export class DeathScene extends Phaser.Scene {
   constructor() {
@@ -20,16 +21,16 @@ export class DeathScene extends Phaser.Scene {
     createOverlay(this, 0x220000, 0.8);
 
     // Panel
-    drawPanel(this, cx, cy, 180, 110);
+    drawPanel(this, cx, cy, 360, 220);
 
     // Title
-    createTitle(this, cx, cy - 35, 'You Died', '14px');
+    createTitle(this, cx, cy - 70, 'You Died');
 
     // Divider
-    createDivider(this, cy - 20, 140);
+    createDivider(this, cy - 40, 280);
 
-    // Buttons (UP/DOWN/ENTER/SPACE handled by createMenuButtons)
-    createMenuButtons(this, cx, cy + 0, 20, [
+    // Buttons
+    createMenuButtons(this, cx, cy + 0, 40, [
       {
         label: 'Restart',
         onClick: () => { this.scene.stop('UIScene'); this.scene.start('OverworldScene'); },
@@ -42,10 +43,6 @@ export class DeathScene extends Phaser.Scene {
     ]);
 
     // Hint
-    this.add.text(cx, cy + 44, 'ENTER select / UP DOWN navigate', {
-      fontSize: '7px',
-      color: COLORS.textDim,
-      fontFamily: 'monospace',
-    }).setOrigin(0.5).setDepth(10);
+    pixelText(this, cx, cy + 88, 'ENTER select / UP DOWN navigate', 'dim');
   }
 }

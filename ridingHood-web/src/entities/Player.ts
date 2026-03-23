@@ -3,6 +3,7 @@ import { LIGHT_FORM, DARK_FORM, PLAYER, PHYSICS, DARKNESS_METER } from '../confi
 import { EventBus, Events } from '../utils/EventBus';
 import { moveToward } from '../utils/MathUtils';
 import { getSoundManager } from '../systems/SoundManager';
+import { InputManager } from '../systems/InputManager';
 
 export enum PlayerState {
   IDLE,
@@ -68,13 +69,11 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private checkpointPosition: Phaser.Math.Vector2 | null = null;
 
   // Input
-  private cursors!: Phaser.Types.Input.Keyboard.CursorKeys;
-  private keyW!: Phaser.Input.Keyboard.Key;
-  private keyA!: Phaser.Input.Keyboard.Key;
-  private keyD!: Phaser.Input.Keyboard.Key;
-  private keyX!: Phaser.Input.Keyboard.Key;
-  private keyC!: Phaser.Input.Keyboard.Key;
-  private keyZ!: Phaser.Input.Keyboard.Key;
+  private inputMgr!: InputManager;
+
+  // Transform long-press
+  private transformHoldTimer: number = 0;
+  private static readonly TRANSFORM_HOLD_MS = 800;
 
   constructor(scene: Phaser.Scene, x: number, y: number) {
     // Start with first idle frame
@@ -94,13 +93,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     body.setMaxVelocityY(400);
 
     // Input
-    this.cursors = scene.input.keyboard!.createCursorKeys();
-    this.keyW = scene.input.keyboard!.addKey('W');
-    this.keyA = scene.input.keyboard!.addKey('A');
-    this.keyD = scene.input.keyboard!.addKey('D');
-    this.keyX = scene.input.keyboard!.addKey('X');
-    this.keyC = scene.input.keyboard!.addKey('C');
-    this.keyZ = scene.input.keyboard!.addKey('Z');
+    this.inputMgr = new InputManager(scene);
 
     // Attack hitbox (invisible, toggled on during attacks)
     this.attackHitbox = scene.add.rectangle(x + 12, y, 16, 16);
@@ -186,7 +179,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.handleMovement(dt, onFloor);
         this.handleJumpInput(onFloor);
         this.handleAttackInput();
-        this.handleTransformInput();
+        this.handleTransformInput(delta);
         this.handleEvasionInput();
         break;
 
@@ -195,7 +188,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.handleAirMovement(dt);
         this.handleJumpRelease();
         this.handleAttackInput();
-        this.handleTransformInput();
+        this.handleTransformInput(delta);
         this.handleEvasionInput();
         if (onFloor) {
           this.changeState(body.velocity.x !== 0 ? PlayerState.RUN : PlayerState.IDLE);
@@ -228,7 +221,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             break;
           }
           // Cancel into next attack (combo)
-          if (Phaser.Input.Keyboard.JustDown(this.keyX)) {
+          if (this.inputMgr.attackJustPressed()) {
             this.cancelAttack();
             this.handleAttackInput();
             break;
@@ -261,6 +254,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
     // Keep body offset correct for current frame size
     this.updateBodyOffset();
+
+    // Snapshot gamepad state for edge detection
+    this.inputMgr.postUpdate();
   }
 
   private handleMovement(dt: number, onFloor: boolean): void {
@@ -302,9 +298,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   private isJumpPressed(): boolean {
-    return Phaser.Input.Keyboard.JustDown(this.cursors.up!) ||
-           Phaser.Input.Keyboard.JustDown(this.keyW) ||
-           Phaser.Input.Keyboard.JustDown(this.cursors.space!);
+    return this.inputMgr.jumpJustPressed();
   }
 
   private handleJumpInput(onFloor: boolean): void {
@@ -319,12 +313,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   private handleJumpRelease(): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
-    const jumpReleased = Phaser.Input.Keyboard.JustUp(this.cursors.up!) ||
-                         Phaser.Input.Keyboard.JustUp(this.keyW) ||
-                         Phaser.Input.Keyboard.JustUp(this.cursors.space!);
 
     // Variable jump height — cut velocity on release
-    if (jumpReleased && body.velocity.y < this.stats.JUMP_VELOCITY / 2) {
+    if (this.inputMgr.jumpJustReleased() && body.velocity.y < this.stats.JUMP_VELOCITY / 2) {
       body.velocity.y = this.stats.JUMP_VELOCITY / 2;
     }
   }
@@ -344,7 +335,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   private handleAttackInput(): void {
-    const attackPressed = Phaser.Input.Keyboard.JustDown(this.keyX);
+    const attackPressed = this.inputMgr.attackJustPressed();
 
     if (attackPressed && this.currentState !== PlayerState.ATTACK) {
       this.attackCombo = (this.attackCombo % 3) + 1;
@@ -372,20 +363,27 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  private handleTransformInput(): void {
-    if (!Phaser.Input.Keyboard.JustDown(this.keyC)) return;
-
-    if (this.form === 'light') {
-      if (this.darknessMeter >= DARKNESS_METER.TRANSFORM_THRESHOLD) {
-        this.transform('dark');
+  private handleTransformInput(delta: number): void {
+    if (this.inputMgr.transformHeld()) {
+      // Accumulate hold time
+      this.transformHoldTimer += delta;
+      if (this.transformHoldTimer >= Player.TRANSFORM_HOLD_MS) {
+        this.transformHoldTimer = 0;
+        if (this.form === 'light') {
+          if (this.darknessMeter >= DARKNESS_METER.TRANSFORM_THRESHOLD) {
+            this.transform('dark');
+          }
+        } else {
+          this.transform('light');
+        }
       }
     } else {
-      this.transform('light');
+      this.transformHoldTimer = 0;
     }
   }
 
   private handleEvasionInput(): void {
-    if (!Phaser.Input.Keyboard.JustDown(this.keyZ)) return;
+    if (!this.inputMgr.dodgeJustPressed()) return;
 
     if (this.form === 'dark') {
       // Dark form: dash with i-frames
@@ -547,19 +545,38 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     const body = this.body as Phaser.Physics.Arcade.Body;
     body.velocity.set(0, 0);
     body.setAllowGravity(false);
-    this.setAlpha(0.5);
 
     getSoundManager().playDeath();
     EventBus.emit(Events.PLAYER_DIED);
 
-    if (this.checkpointPosition) {
-      this.scene.time.delayedCall(1000, () => this.respawn());
-    } else {
-      this.scene.time.delayedCall(1000, () => {
-        this.scene.scene.stop('UIScene');
-        this.scene.scene.start('DeathScene');
-      });
-    }
+    // Red glow flash
+    this.setTint(0xff0000);
+    this.setAlpha(1);
+
+    // Brief red hold, then fade out
+    this.scene.tweens.add({
+      targets: this,
+      alpha: 0,
+      duration: 800,
+      delay: 300,
+      ease: 'Sine.easeIn',
+      onComplete: () => {
+        if (this.checkpointPosition) {
+          this.respawn();
+        } else {
+          this.scene.scene.stop('UIScene');
+          this.scene.scene.start('DeathScene');
+        }
+      },
+    });
+
+    // Slight upward drift while fading
+    this.scene.tweens.add({
+      targets: this,
+      y: this.y - 8,
+      duration: 1100,
+      ease: 'Sine.easeOut',
+    });
   }
 
   private respawn(): void {
@@ -620,10 +637,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   private getInputX(): number {
-    let x = 0;
-    if (this.cursors.left?.isDown || this.keyA.isDown) x -= 1;
-    if (this.cursors.right?.isDown || this.keyD.isDown) x += 1;
-    return x;
+    return this.inputMgr.getMoveX();
   }
 
   private updateBodyOffset(): void {

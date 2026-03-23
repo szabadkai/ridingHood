@@ -10,11 +10,11 @@ interface LevelNode {
 }
 
 const LEVELS: LevelNode[] = [
-  { x: 40,  y: 140, label: 'Dark Forest',         level: 1 },
-  { x: 110, y: 100, label: 'Abandoned Village',    level: 2 },
-  { x: 175, y: 130, label: "Huntsman's Castle",    level: 3 },
-  { x: 230, y: 80,  label: "Grandmother's Tower",  level: 4 },
-  { x: 285, y: 120, label: 'The Abyss',            level: 5 },
+  { x: 80,   y: 280, label: 'Dark Forest',         level: 1 },
+  { x: 220,  y: 200, label: 'Abandoned Village',    level: 2 },
+  { x: 350,  y: 260, label: "Huntsman's Castle",    level: 3 },
+  { x: 460,  y: 160, label: "Grandmother's Tower",  level: 4 },
+  { x: 570,  y: 240, label: 'The Abyss',            level: 5 },
 ];
 
 const SAVE_KEY = 'darkRidingHood_progress';
@@ -53,23 +53,23 @@ export class OverworldScene extends Phaser.Scene {
 
     // Ground
     bg.fillStyle(0x1a2a10, 1);
-    bg.fillRect(0, 150, GAME_WIDTH, 30);
+    bg.fillRect(0, 300, GAME_WIDTH, 60);
     bg.fillStyle(0x142008, 1);
-    bg.fillRect(0, 155, GAME_WIDTH, 25);
+    bg.fillRect(0, 310, GAME_WIDTH, 50);
 
     // Stars
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < 50; i++) {
       const sx = Phaser.Math.Between(0, GAME_WIDTH);
-      const sy = Phaser.Math.Between(0, 80);
+      const sy = Phaser.Math.Between(0, 160);
       bg.fillStyle(0xffffff, Phaser.Math.FloatBetween(0.3, 0.8));
       bg.fillRect(sx, sy, 1, 1);
     }
 
     // Trees in background
-    for (let i = 0; i < 8; i++) {
+    for (let i = 0; i < 12; i++) {
       const tx = Phaser.Math.Between(10, GAME_WIDTH - 10);
-      const ty = Phaser.Math.Between(100, 148);
-      this.drawTree(bg, tx, ty, Phaser.Math.Between(6, 12));
+      const ty = Phaser.Math.Between(200, 296);
+      this.drawTree(bg, tx, ty, Phaser.Math.Between(12, 24));
     }
 
     // Draw paths between nodes
@@ -81,14 +81,14 @@ export class OverworldScene extends Phaser.Scene {
 
       // Dotted path
       const dist = Phaser.Math.Distance.Between(a.x, a.y, b.x, b.y);
-      const steps = Math.floor(dist / 4);
+      const steps = Math.floor(dist / 8);
       for (let s = 0; s <= steps; s++) {
         const t = s / steps;
         const px = Phaser.Math.Linear(a.x, b.x, t);
         const py = Phaser.Math.Linear(a.y, b.y, t);
         if (s % 2 === 0) {
           pathGfx.fillStyle(unlocked ? 0x886633 : 0x333333, unlocked ? 0.8 : 0.4);
-          pathGfx.fillRect(Math.floor(px), Math.floor(py), 2, 2);
+          pathGfx.fillRect(Math.floor(px), Math.floor(py), 4, 4);
         }
       }
     }
@@ -102,8 +102,8 @@ export class OverworldScene extends Phaser.Scene {
 
       // Node circle — make interactive for mouse
       const color = completed ? 0x44cc44 : unlocked ? 0xcc3333 : 0x444444;
-      const circle = this.add.circle(node.x, node.y, 8, color);
-      circle.setStrokeStyle(1, unlocked ? 0xffffff : 0x666666);
+      const circle = this.add.circle(node.x, node.y, 16, color);
+      circle.setStrokeStyle(2, unlocked ? 0xffffff : 0x666666);
       this.nodeSprites.push(circle);
 
       if (unlocked) {
@@ -124,22 +124,21 @@ export class OverworldScene extends Phaser.Scene {
         });
       }
 
-      // Completed checkmark
+      // Completed checkmark (drawn as graphics)
       if (completed) {
-        this.add.text(node.x, node.y - 1, '✓', {
-          fontSize: '8px',
-          color: '#ffffff',
-          fontFamily: 'monospace',
-        }).setOrigin(0.5);
+        const cg = this.add.graphics();
+        cg.lineStyle(2, 0xffffff, 1);
+        cg.lineBetween(node.x - 4, node.y, node.x, node.y + 4);
+        cg.lineBetween(node.x, node.y + 4, node.x + 6, node.y - 4);
       }
 
-      // Lock icon for locked levels
+      // Lock icon for locked levels (drawn as graphics)
       if (!unlocked) {
-        this.add.text(node.x, node.y - 1, '■', {
-          fontSize: '8px',
-          color: '#666666',
-          fontFamily: 'monospace',
-        }).setOrigin(0.5);
+        const lg = this.add.graphics();
+        lg.fillStyle(0x666666, 1);
+        lg.fillRect(node.x - 4, node.y - 4, 8, 8);
+        lg.lineStyle(2, 0x666666, 1);
+        lg.strokeRect(node.x - 4, node.y - 8, 8, 6);
       }
     }
 
@@ -148,13 +147,14 @@ export class OverworldScene extends Phaser.Scene {
       this.generatePlayerIcon();
     }
     const startNode = LEVELS[this.selectedIndex];
-    this.playerIcon = this.add.sprite(startNode.x, startNode.y - 14, 'overworld_player');
+    this.playerIcon = this.add.sprite(startNode.x, startNode.y - 28, 'overworld_player');
     this.playerIcon.setOrigin(0.5, 1.0);
+    this.playerIcon.setScale(2);
 
     // Bobbing animation
     this.tweens.add({
       targets: this.playerIcon,
-      y: startNode.y - 16,
+      y: startNode.y - 32,
       duration: 600,
       yoyo: true,
       repeat: -1,
@@ -173,25 +173,26 @@ export class OverworldScene extends Phaser.Scene {
     });
 
     // Title
-    this.add.text(GAME_WIDTH / 2, 10, 'Dark Riding Hood', {
-      fontSize: '10px',
+    this.add.text(GAME_WIDTH / 2, 20, 'Dark Riding Hood', {
+      fontSize: '20px',
       color: '#cc3333',
-      fontFamily: 'monospace',
+      fontFamily: '"Courier New", Courier, monospace',
+      fontStyle: 'bold',
     }).setOrigin(0.5);
 
     // Level label
-    this.labelText = this.add.text(GAME_WIDTH / 2, 25, '', {
-      fontSize: '8px',
+    this.labelText = this.add.text(GAME_WIDTH / 2, 50, '', {
+      fontSize: '16px',
       color: '#ffffff',
-      fontFamily: 'monospace',
+      fontFamily: '"Courier New", Courier, monospace',
     }).setOrigin(0.5);
     this.updateLabel();
 
     // Controls hint
-    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 8, '\u2190 \u2192 select   ENTER play', {
-      fontSize: '7px',
+    this.add.text(GAME_WIDTH / 2, GAME_HEIGHT - 16, '<- -> select   ENTER play', {
+      fontSize: '14px',
       color: '#666666',
-      fontFamily: 'monospace',
+      fontFamily: '"Courier New", Courier, monospace',
     }).setOrigin(0.5);
 
     // Input
@@ -232,7 +233,7 @@ export class OverworldScene extends Phaser.Scene {
     this.tweens.add({
       targets: this.playerIcon,
       x: target.x,
-      y: target.y - 14,
+      y: target.y - 28,
       duration: 300,
       ease: 'Sine.easeInOut',
       onComplete: () => {
@@ -240,7 +241,7 @@ export class OverworldScene extends Phaser.Scene {
         // Restart bobbing
         this.tweens.add({
           targets: this.playerIcon,
-          y: target.y - 16,
+          y: target.y - 32,
           duration: 600,
           yoyo: true,
           repeat: -1,

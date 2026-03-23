@@ -13,6 +13,7 @@ export class CameraManager {
 
     // Set up camera properties
     this.camera.setRoundPixels(true);
+    this.camera.setZoom(1); // default, GameScene overrides to 2
 
     // Listen for events
     EventBus.on(Events.CAMERA_SHAKE, this.shake, this);
@@ -47,9 +48,10 @@ export class CameraManager {
     // Stop following so we can manually scroll
     this.camera.stopFollow();
 
-    // Target scroll position (camera shows GAME_WIDTH x GAME_HEIGHT centered on target)
-    const targetScrollX = worldX - GAME_WIDTH / 2;
-    const targetScrollY = worldY - GAME_HEIGHT / 2;
+    // Target scroll position — account for zoom
+    const zoom = this.camera.zoom;
+    const targetScrollX = worldX - (GAME_WIDTH / zoom) / 2;
+    const targetScrollY = worldY - (GAME_HEIGHT / zoom) / 2;
 
     this.scene.tweens.add({
       targets: this.camera,

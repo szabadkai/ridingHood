@@ -2,6 +2,9 @@ import Phaser from 'phaser';
 import { GAME_WIDTH, GAME_HEIGHT } from '../config/GameConfig';
 import { getSoundManager } from '../systems/SoundManager';
 
+// Font family used throughout menus
+const FONT = '"Courier New", Courier, monospace';
+
 // Consistent color palette for all menus
 export const COLORS = {
   bg: 0x0a0812,
@@ -44,16 +47,15 @@ export function drawPanel(
 ): Phaser.GameObjects.Graphics {
   const g = scene.add.graphics().setDepth(depth);
   g.fillStyle(COLORS.panelBg, 0.95);
-  g.fillRoundedRect(x - w / 2, y - h / 2, w, h, 3);
-  g.lineStyle(1, COLORS.panelBorder, 0.8);
-  g.strokeRoundedRect(x - w / 2, y - h / 2, w, h, 3);
+  g.fillRoundedRect(x - w / 2, y - h / 2, w, h, 6);
+  g.lineStyle(2, COLORS.panelBorder, 0.8);
+  g.strokeRoundedRect(x - w / 2, y - h / 2, w, h, 6);
   return g;
 }
 
 /**
  * Creates a row of menu buttons with hover effects, sounds,
  * and full keyboard (UP/DOWN/ENTER) + mouse navigation.
- * Returns a MenuNav object with the texts and focus control.
  */
 export function createMenuButtons(
   scene: Phaser.Scene,
@@ -70,15 +72,13 @@ export function createMenuButtons(
   let focusIndex = 0;
 
   const setFocus = (index: number) => {
-    // Unfocus old
     if (focusIndex >= 0 && focusIndex < texts.length) {
       texts[focusIndex].setColor(baseColors[focusIndex]);
       texts[focusIndex].setScale(1);
     }
     focusIndex = index;
-    // Focus new
     texts[focusIndex].setColor(hoverColors[focusIndex]);
-    texts[focusIndex].setScale(1.1);
+    texts[focusIndex].setScale(1);
   };
 
   for (let i = 0; i < buttons.length; i++) {
@@ -90,9 +90,10 @@ export function createMenuButtons(
     hoverColors.push(hoverColor);
 
     const text = scene.add.text(cx, y, btn.label, {
-      fontSize: '10px',
+      fontSize: '16px',
       color: baseColor,
-      fontFamily: 'monospace',
+      fontFamily: FONT,
+      fontStyle: 'bold',
     }).setOrigin(0.5).setInteractive({ useHandCursor: true }).setDepth(depth);
 
     text.on('pointerover', () => {
@@ -113,33 +114,20 @@ export function createMenuButtons(
     texts.push(text);
   }
 
-  // Set initial focus on first button
   setFocus(0);
 
   // Keyboard navigation
   scene.input.keyboard!.on('keydown-UP', () => {
-    if (focusIndex > 0) {
-      sound.playMenuSelect();
-      setFocus(focusIndex - 1);
-    }
+    if (focusIndex > 0) { sound.playMenuSelect(); setFocus(focusIndex - 1); }
   });
   scene.input.keyboard!.on('keydown-DOWN', () => {
-    if (focusIndex < buttons.length - 1) {
-      sound.playMenuSelect();
-      setFocus(focusIndex + 1);
-    }
+    if (focusIndex < buttons.length - 1) { sound.playMenuSelect(); setFocus(focusIndex + 1); }
   });
   scene.input.keyboard!.on('keydown-W', () => {
-    if (focusIndex > 0) {
-      sound.playMenuSelect();
-      setFocus(focusIndex - 1);
-    }
+    if (focusIndex > 0) { sound.playMenuSelect(); setFocus(focusIndex - 1); }
   });
   scene.input.keyboard!.on('keydown-S', () => {
-    if (focusIndex < buttons.length - 1) {
-      sound.playMenuSelect();
-      setFocus(focusIndex + 1);
-    }
+    if (focusIndex < buttons.length - 1) { sound.playMenuSelect(); setFocus(focusIndex + 1); }
   });
   scene.input.keyboard!.on('keydown-ENTER', () => {
     sound.playMenuConfirm();
@@ -176,14 +164,14 @@ export function createTitle(
   scene: Phaser.Scene,
   x: number, y: number,
   text: string,
-  fontSize: string = '14px',
+  fontSize: string = '24px',
   color: string = COLORS.title,
   depth: number = 10,
 ): Phaser.GameObjects.Text {
   return scene.add.text(x, y, text, {
     fontSize,
     color,
-    fontFamily: 'monospace',
+    fontFamily: FONT,
     fontStyle: 'bold',
   }).setOrigin(0.5).setDepth(depth);
 }
@@ -199,7 +187,7 @@ export function createDivider(
 ): Phaser.GameObjects.Graphics {
   const g = scene.add.graphics().setDepth(depth);
   const cx = GAME_WIDTH / 2;
-  g.lineStyle(1, COLORS.panelBorder, 0.5);
+  g.lineStyle(2, COLORS.panelBorder, 0.5);
   g.lineBetween(cx - width / 2, y, cx + width / 2, y);
   return g;
 }

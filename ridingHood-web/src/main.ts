@@ -9,6 +9,7 @@ import { DeathScene } from './scenes/DeathScene';
 import { VictoryScene } from './scenes/VictoryScene';
 import { OverworldScene } from './scenes/OverworldScene';
 import { PauseScene } from './scenes/PauseScene';
+import { ParallaxBgScene } from './systems/ParallaxManager';
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.AUTO,
@@ -22,6 +23,9 @@ const config: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH,
   },
+  input: {
+    gamepad: true,
+  },
   physics: {
     default: 'arcade',
     arcade: {
@@ -29,7 +33,7 @@ const config: Phaser.Types.Core.GameConfig = {
       debug: false,
     },
   },
-  scene: [BootScene, PreloadScene, MainMenuScene, OverworldScene, GameScene, UIScene, PauseScene, DeathScene, VictoryScene],
+  scene: [BootScene, PreloadScene, MainMenuScene, OverworldScene, GameScene, UIScene, PauseScene, DeathScene, VictoryScene, ParallaxBgScene],
 };
 
 const isEditorMode = import.meta.env.DEV && window.location.search.includes('editor');
