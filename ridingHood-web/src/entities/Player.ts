@@ -1,7 +1,7 @@
 import Phaser from 'phaser';
 import { LIGHT_FORM, DARK_FORM, PLAYER, PHYSICS, DARKNESS_METER } from '../config/GameConfig';
 import { EventBus, Events } from '../utils/EventBus';
-import { moveToward } from '../utils/MathUtils';
+import { moveToward, expLerp } from '../utils/MathUtils';
 import { getSoundManager } from '../systems/SoundManager';
 import { InputManager } from '../systems/InputManager';
 
@@ -22,11 +22,19 @@ export enum PlayerState {
 export type PlayerForm = 'light' | 'dark';
 
 // How many ms into an attack before it can be cancelled by movement/jump
-const ATTACK_COMMIT_MS = 150;
+const ATTACK_COMMIT_MS = 100;
 // Max time an attack can last before forced exit (failsafe)
-const ATTACK_MAX_MS = 600;
+const ATTACK_MAX_MS = 500;
 const ROLL_SPEED = 180;
 const ROLL_DURATION_MS = 300;
+// Time after last attack before combo resets
+const COMBO_RESET_MS = 500;
+// Landing squash duration
+const LANDING_SQUASH_MS = 80;
+// Exponential smoothing factor for ground movement (higher = snappier, 0-1)
+const MOVE_SMOOTHING = 0.98;
+// How much pre-attack velocity to keep during attacks (0-1)
+const ATTACK_MOMENTUM_KEEP = 0.4;
 
 export class Player extends Phaser.Physics.Arcade.Sprite {
   // State
@@ -54,6 +62,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private attackCombo: number = 0;
   private attackTimer: number = 0;
   private hitEnemies: Set<Phaser.GameObjects.GameObject> = new Set();
+  private attackBuffered: boolean = false;
+  private lastAttackEndTime: number = 0;
+  private preAttackVelocityX: number = 0;
+
+  // Landing
+  private landingSquashTimer: number = 0;
+  private isLandingRecovery: boolean = false;
 
   // Dash (dark form)
   private dashTimer: number = 0;
@@ -172,6 +187,24 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.dashCooldown > 0) this.dashCooldown -= delta;
     if (this.rollCooldown > 0) this.rollCooldown -= delta;
 
+    // Landing squash timer
+    if (this.landingSquashTimer > 0) {
+      this.landingSquashTimer -= delta;
+      const t = this.landingSquashTimer / LANDING_SQUASH_MS;
+      this.setScale(1 + 0.15 * t, 1 - 0.15 * t); // squash: wider + shorter
+      if (this.landingSquashTimer <= 0) {
+        this.setScale(1, 1);
+        this.isLandingRecovery = false;
+      }
+    }
+
+    // Combo reset: if too long since last attack ended, reset combo
+    if (this.attackCombo > 0 && this.currentState !== PlayerState.ATTACK) {
+      if (_time - this.lastAttackEndTime > COMBO_RESET_MS) {
+        this.attackCombo = 0;
+      }
+    }
+
     // State machine
     switch (this.currentState) {
       case PlayerState.IDLE:
@@ -191,7 +224,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         this.handleTransformInput(delta);
         this.handleEvasionInput();
         if (onFloor) {
-          this.changeState(body.velocity.x !== 0 ? PlayerState.RUN : PlayerState.IDLE);
+          this.onLanding();
         } else if (body.velocity.y > 0 && this.currentState === PlayerState.JUMP) {
           this.changeState(PlayerState.FALL);
         }
@@ -200,10 +233,13 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       case PlayerState.ATTACK:
         this.attackTimer += delta;
         this.handleAttackMovement(dt, onFloor);
+        // Buffer attack input during current attack
+        if (this.inputMgr.attackJustPressed()) {
+          this.attackBuffered = true;
+        }
         // Failsafe: force exit attack if animation didn't complete
         if (this.attackTimer > ATTACK_MAX_MS) {
-          this.cancelAttack();
-          this.changeState(onFloor ? PlayerState.IDLE : PlayerState.FALL);
+          this.endAttack(onFloor);
           break;
         }
         // Allow cancelling attack after commit window
@@ -214,16 +250,17 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
             this.performJump();
             break;
           }
+          // Cancel into next attack via buffer or fresh press
+          if (this.attackBuffered || this.inputMgr.attackJustPressed()) {
+            this.attackBuffered = false;
+            this.cancelAttack();
+            this.handleAttackInput();
+            break;
+          }
           // Cancel into movement
           if (this.getInputX() !== 0) {
             this.cancelAttack();
             this.changeState(PlayerState.RUN);
-            break;
-          }
-          // Cancel into next attack (combo)
-          if (this.inputMgr.attackJustPressed()) {
-            this.cancelAttack();
-            this.handleAttackInput();
             break;
           }
         }
@@ -231,6 +268,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
       case PlayerState.HURT:
         // Brief knockback state — transitions handled by timer
+        // Gradually reduce knockback velocity
+        body.velocity.x = moveToward(body.velocity.x, 0, this.stats.FRICTION * 0.3 * dt);
         break;
 
       case PlayerState.TRANSFORM:
@@ -262,14 +301,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private handleMovement(dt: number, onFloor: boolean): void {
     const inputX = this.getInputX();
     const body = this.body as Phaser.Physics.Arcade.Body;
+    const landingPenalty = this.isLandingRecovery ? 0.7 : 1.0;
 
     if (inputX !== 0) {
-      // Snap to full speed quickly for responsive feel
-      const targetSpeed = this.stats.SPEED * inputX;
+      const targetSpeed = this.stats.SPEED * inputX * landingPenalty;
       body.velocity.x = moveToward(body.velocity.x, targetSpeed, this.stats.ACCELERATION * dt);
       this.facingRight = inputX > 0;
       if (onFloor) this.changeState(PlayerState.RUN);
     } else {
+      // Stop quickly — no sliding
       body.velocity.x = moveToward(body.velocity.x, 0, this.stats.FRICTION * dt);
       if (onFloor && Math.abs(body.velocity.x) < 10) {
         body.velocity.x = 0;
@@ -293,7 +333,14 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private handleAttackMovement(dt: number, onFloor: boolean): void {
     const body = this.body as Phaser.Physics.Arcade.Body;
     if (onFloor) {
-      body.velocity.x = moveToward(body.velocity.x, 0, this.stats.FRICTION * 0.5 * dt);
+      // Slide to a fraction of pre-attack velocity instead of full stop
+      const keepSpeed = this.preAttackVelocityX * ATTACK_MOMENTUM_KEEP;
+      body.velocity.x = moveToward(body.velocity.x, keepSpeed, this.stats.FRICTION * 0.8 * dt);
+    }
+    // Allow slight directional nudge during attack
+    const inputX = this.getInputX();
+    if (inputX !== 0 && this.attackTimer > ATTACK_COMMIT_MS) {
+      body.velocity.x += inputX * this.stats.SPEED * 0.15 * dt;
     }
   }
 
@@ -329,18 +376,55 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     getSoundManager().playJump();
   }
 
+  private onLanding(): void {
+    const body = this.body as Phaser.Physics.Arcade.Body;
+    const inputX = this.getInputX();
+
+    // Landing squash effect
+    this.landingSquashTimer = LANDING_SQUASH_MS;
+    this.isLandingRecovery = true;
+
+    // Check buffered jump
+    if (this.jumpBufferTimer > 0) {
+      this.performJump();
+      return;
+    }
+
+    if (inputX !== 0) {
+      this.changeState(PlayerState.RUN);
+    } else {
+      this.changeState(PlayerState.IDLE);
+    }
+  }
+
   private cancelAttack(): void {
     (this.attackHitbox.body as Phaser.Physics.Arcade.Body).enable = false;
+    this.attackBuffered = false;
+    this.lastAttackEndTime = this.scene.time.now;
     this.off('animationcomplete');
   }
 
-  private handleAttackInput(): void {
-    const attackPressed = this.inputMgr.attackJustPressed();
+  private endAttack(onFloor: boolean): void {
+    // Check if there's a buffered attack to chain into
+    if (this.attackBuffered) {
+      this.attackBuffered = false;
+      this.cancelAttack();
+      this.handleAttackInput(true); // force attack
+      return;
+    }
+    this.cancelAttack();
+    this.changeState(onFloor ? PlayerState.IDLE : PlayerState.FALL);
+  }
+
+  private handleAttackInput(force: boolean = false): void {
+    const attackPressed = force || this.inputMgr.attackJustPressed();
 
     if (attackPressed && this.currentState !== PlayerState.ATTACK) {
       this.attackCombo = (this.attackCombo % 3) + 1;
       this.hitEnemies.clear();
       this.attackTimer = 0;
+      this.attackBuffered = false;
+      this.preAttackVelocityX = (this.body as Phaser.Physics.Arcade.Body).velocity.x;
       this.changeState(PlayerState.ATTACK);
       getSoundManager().playAttack();
 
@@ -352,13 +436,9 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
       // Listen for animation complete to exit attack
       this.once('animationcomplete', () => {
-        (this.attackHitbox.body as Phaser.Physics.Arcade.Body).enable = false;
         const body = this.body as Phaser.Physics.Arcade.Body;
-        if (body.blocked.down) {
-          this.changeState(Math.abs(body.velocity.x) > 5 ? PlayerState.RUN : PlayerState.IDLE);
-        } else {
-          this.changeState(body.velocity.y < 0 ? PlayerState.JUMP : PlayerState.FALL);
-        }
+        const onFloor = body.blocked.down;
+        this.endAttack(onFloor);
       });
     }
   }

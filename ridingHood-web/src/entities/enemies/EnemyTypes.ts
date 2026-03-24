@@ -34,6 +34,8 @@ export const ENEMY_TYPES: Record<EnemyTypeKey, EnemyTypeDef> = {
       bodyHeight: 20,
       aggroRange: 90,
       chaseSpeedMult: 1.6,
+      deathColor: 0x44aa33,  // green orc blood
+      deathParticles: 10,
     },
   },
 
@@ -50,6 +52,8 @@ export const ENEMY_TYPES: Record<EnemyTypeKey, EnemyTypeDef> = {
       bodyHeight: 22,
       aggroRange: 110,
       chaseSpeedMult: 1.4,
+      deathColor: 0x4466cc,  // blue armor shards
+      deathParticles: 16,
     },
   },
 
@@ -66,6 +70,8 @@ export const ENEMY_TYPES: Record<EnemyTypeKey, EnemyTypeDef> = {
       bodyHeight: 22,
       aggroRange: 130,
       chaseSpeedMult: 2.0,
+      deathColor: 0x66cc66,  // green magic sparkle
+      deathParticles: 8,
     },
   },
 
@@ -82,6 +88,8 @@ export const ENEMY_TYPES: Record<EnemyTypeKey, EnemyTypeDef> = {
       bodyHeight: 22,
       aggroRange: 150,
       chaseSpeedMult: 1.2,
+      deathColor: 0x8844cc,  // purple magic burst
+      deathParticles: 14,
     },
   },
 
@@ -98,6 +106,8 @@ export const ENEMY_TYPES: Record<EnemyTypeKey, EnemyTypeDef> = {
       bodyHeight: 22,
       aggroRange: 100,
       chaseSpeedMult: 1.8,
+      deathColor: 0x33aa55,  // green scales
+      deathParticles: 12,
     },
   },
 
@@ -114,6 +124,8 @@ export const ENEMY_TYPES: Record<EnemyTypeKey, EnemyTypeDef> = {
       bodyHeight: 26,
       aggroRange: 70,
       chaseSpeedMult: 1.3,
+      deathColor: 0x55aaaa,  // teal goo
+      deathParticles: 20,
     },
     scale: 1.3,
   },
@@ -131,6 +143,8 @@ export const ENEMY_TYPES: Record<EnemyTypeKey, EnemyTypeDef> = {
       bodyHeight: 26,
       aggroRange: 80,
       chaseSpeedMult: 1.4,
+      deathColor: 0xaa7733,  // brown chunks
+      deathParticles: 18,
     },
     scale: 1.2,
   },
@@ -148,6 +162,8 @@ export const ENEMY_TYPES: Record<EnemyTypeKey, EnemyTypeDef> = {
       bodyHeight: 20,
       aggroRange: 105,
       chaseSpeedMult: 1.8,
+      deathColor: 0xee5522,  // fire/ember
+      deathParticles: 12,
     },
   },
 
@@ -164,6 +180,8 @@ export const ENEMY_TYPES: Record<EnemyTypeKey, EnemyTypeDef> = {
       bodyHeight: 20,
       aggroRange: 95,
       chaseSpeedMult: 1.7,
+      deathColor: 0x55bb33,  // goblin green
+      deathParticles: 8,
     },
   },
 
@@ -180,6 +198,8 @@ export const ENEMY_TYPES: Record<EnemyTypeKey, EnemyTypeDef> = {
       bodyHeight: 14,
       aggroRange: 100,
       chaseSpeedMult: 1.6,
+      deathColor: 0xccccaa,  // bone white
+      deathParticles: 10,
     },
     scale: 0.9,
   },

@@ -2,6 +2,7 @@ import Phaser from 'phaser';
 import { Enemy } from './Enemy';
 import { EventBus, Events } from '../../utils/EventBus';
 import { getSoundManager } from '../../systems/SoundManager';
+import { spawnDeathEffect } from '../../effects/DeathEffect';
 
 enum BossState {
   IDLE,
@@ -272,24 +273,52 @@ export class WolfKing extends Enemy {
     body.velocity.set(0, 0);
     body.enable = false;
 
-    this.clearTint();
-    if (this.scene.anims.exists('boss_death')) {
-      this.play('boss_death');
-      this.once('animationcomplete', () => {
-        this.scene.tweens.add({
-          targets: this,
-          alpha: 0,
-          duration: 500,
-          onComplete: () => this.destroy(),
-        });
+    // Dramatic boss death: freeze, flash, shake, multi-burst, then explode
+    this.setTint(0xffffff);
+    this.scene.cameras.main.shake(400, 0.01);
+
+    // First burst after hit-freeze
+    this.scene.time.delayedCall(150, () => {
+      spawnDeathEffect(this.scene, this.x, this.y - this.displayHeight * 0.5, {
+        color: 0xff4444,
+        count: 16,
+        scale: this.scaleX,
+        isBoss: true,
       });
-    } else {
+      this.setTint(0xff0000);
+    });
+
+    // Second burst — staggered
+    this.scene.time.delayedCall(400, () => {
+      spawnDeathEffect(this.scene, this.x, this.y - this.displayHeight * 0.3, {
+        color: 0xffaa22,
+        count: 12,
+        scale: this.scaleX,
+        isBoss: true,
+      });
+      this.scene.cameras.main.shake(200, 0.015);
+    });
+
+    // Final explosion + destroy
+    this.scene.time.delayedCall(650, () => {
+      spawnDeathEffect(this.scene, this.x, this.y - this.displayHeight * 0.5, {
+        color: 0xffffff,
+        count: 20,
+        scale: this.scaleX * 1.5,
+        isBoss: true,
+      });
+
+      this.scene.cameras.main.flash(300, 255, 255, 255, false, undefined, 0.3);
+
       this.scene.tweens.add({
         targets: this,
+        scaleX: 0,
+        scaleY: 0,
         alpha: 0,
-        duration: 400,
+        duration: 300,
+        ease: 'Back.easeIn',
         onComplete: () => this.destroy(),
       });
-    }
+    });
   }
 }

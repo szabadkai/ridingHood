@@ -6,3 +6,12 @@ export function moveToward(current: number, target: number, delta: number): numb
 export function clamp(value: number, min: number, max: number): number {
   return Math.min(Math.max(value, min), max);
 }
+
+/**
+ * Exponential lerp — smooth asymptotic approach.
+ * `smoothing` is how much of the gap to close per second (0–1 range, higher = snappier).
+ * dt is in seconds.
+ */
+export function expLerp(current: number, target: number, smoothing: number, dt: number): number {
+  return target + (current - target) * Math.pow(1 - smoothing, dt);
+}

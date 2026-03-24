@@ -1,5 +1,6 @@
 import Phaser from 'phaser';
 import { EventBus, Events } from '../../utils/EventBus';
+import { spawnDeathEffect } from '../../effects/DeathEffect';
 
 export interface EnemyConfig {
   speed: number;
@@ -16,6 +17,10 @@ export interface EnemyConfig {
   walkAnim?: string;
   /** Death animation key (default 'orc_death') */
   deathAnim?: string;
+  /** Primary color for death particles (default 0xcc3333) */
+  deathColor?: number;
+  /** Number of particles on death (default 12) */
+  deathParticles?: number;
 }
 
 export class Enemy extends Phaser.Physics.Arcade.Sprite {
@@ -178,25 +183,28 @@ export class Enemy extends Phaser.Physics.Arcade.Sprite {
     body.velocity.set(0, 0);
     body.enable = false;
 
-    // Play death animation if available, then destroy
-    const deathAnim = this.config.deathAnim ?? 'orc_death';
-    if (this.scene.anims.exists(deathAnim)) {
-      this.clearTint();
-      this.play(deathAnim);
-      this.once('animationcomplete', () => {
-        this.destroy();
+    // Hit-freeze: flash white, pause briefly, then burst into particles
+    this.setTint(0xffffff);
+
+    this.scene.time.delayedCall(80, () => {
+      // Spawn pixel particle burst at enemy position
+      spawnDeathEffect(this.scene, this.x, this.y - this.displayHeight * 0.5, {
+        color: this.config.deathColor ?? 0xcc3333,
+        count: this.config.deathParticles ?? 12,
+        scale: this.scaleX,
       });
-    } else {
-      // Fallback: fade out
+
+      // Shrink + fade the sprite itself
       this.scene.tweens.add({
         targets: this,
+        scaleX: 0,
+        scaleY: 0,
         alpha: 0,
-        duration: 400,
-        onComplete: () => {
-          this.destroy();
-        },
+        duration: 200,
+        ease: 'Back.easeIn',
+        onComplete: () => this.destroy(),
       });
-    }
+    });
   }
 
   getDamage(): number {

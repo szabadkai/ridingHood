@@ -33,6 +33,7 @@ export class GameScene extends Phaser.Scene {
   private checkpoints!: Phaser.GameObjects.Group;
   private pickups!: Phaser.GameObjects.Group;
   private bossArenaLocked: boolean = false;
+  private bossArenaBounds: { left: number; right: number; top: number; bottom: number } | null = null;
   private levelStartTime: number = 0;
   private enemiesKilled: number = 0;
   private damagesTaken: number = 0;
@@ -45,6 +46,7 @@ export class GameScene extends Phaser.Scene {
 
   create(): void {
     this.bossArenaLocked = false;
+    this.bossArenaBounds = null;
 
     // Initialize sound manager for this scene
     const sound = getSoundManager();
@@ -176,8 +178,9 @@ export class GameScene extends Phaser.Scene {
     this.cameraManager.follow(this.player as unknown as Phaser.GameObjects.GameObject);
     this.cameraManager.setBounds(0, 0, this.lvl.mapWidthTiles * TILE_SIZE, this.lvl.mapHeightTiles * TILE_SIZE);
 
-    // World bounds
+    // World bounds — set before enabling collide so player doesn't get clamped to default bounds
     this.physics.world.setBounds(0, 0, this.lvl.mapWidthTiles * TILE_SIZE, this.lvl.mapHeightTiles * TILE_SIZE + 50);
+    (this.player.body as Phaser.Physics.Arcade.Body).setCollideWorldBounds(true);
 
     // Launch UI overlay scene
     this.scene.launch('UIScene');
@@ -490,6 +493,24 @@ export class GameScene extends Phaser.Scene {
       this.lockBossArena();
     }
 
+    // Hard clamp player to boss arena bounds (no rubber banding)
+    if (this.bossArenaBounds) {
+      const b = this.bossArenaBounds;
+      const pb = this.player.body as Phaser.Physics.Arcade.Body;
+      const halfW = pb.width / 2;
+      if (this.player.x - halfW < b.left) {
+        this.player.x = b.left + halfW;
+        pb.velocity.x = Math.max(0, pb.velocity.x);
+      } else if (this.player.x + halfW > b.right) {
+        this.player.x = b.right - halfW;
+        pb.velocity.x = Math.min(0, pb.velocity.x);
+      }
+      if (pb.y < b.top) {
+        pb.y = b.top;
+        pb.velocity.y = Math.max(0, pb.velocity.y);
+      }
+    }
+
     // Fall death
     if (this.player.y > this.lvl.mapHeightTiles * TILE_SIZE + 40) {
       this.player.takeDamage(999, new Phaser.Math.Vector2(0, 0));
@@ -510,6 +531,16 @@ export class GameScene extends Phaser.Scene {
     const arenaCenterY = arenaHeight / 2;
 
     // ── Phase 1: Freeze gameplay ──
+    // Ensure player is safely inside the arena before placing the wall
+    const safeX = arenaLeft + TILE_SIZE * 2; // 2 tiles past the wall
+    const groundY = (this.lvl.mapHeightTiles - 2) * TILE_SIZE;
+    if (this.player.x < safeX) {
+      this.player.setPosition(safeX, groundY);
+    } else {
+      // Plant on ground if mid-air
+      this.player.setPosition(this.player.x, groundY);
+    }
+
     // Stop player movement and disable input during cinematic
     const playerBody = this.player.body as Phaser.Physics.Arcade.Body;
     playerBody.velocity.set(0, 0);
@@ -608,9 +639,13 @@ export class GameScene extends Phaser.Scene {
         this.cameraManager.setBounds(arenaLeft, 0, arenaWidth, arenaHeight);
         this.cameraManager.resumeFollow();
 
-        // Constrain player and boss within the arena
-        this.physics.world.setBounds(arenaLeft, 0, arenaWidth, arenaHeight + 50);
-        playerBody.setCollideWorldBounds(true);
+        // Constrain player and boss within the arena via hard clamp (no rubber banding)
+        this.bossArenaBounds = {
+          left: arenaLeft + 2,  // small margin so player doesn't overlap the wall tiles
+          right: arenaLeft + arenaWidth - 2,
+          top: 0,
+          bottom: arenaHeight,
+        };
         playerBody.setAllowGravity(true);
         this.player.setActive(true); // re-enable player update
       });
