@@ -177,6 +177,13 @@ export class InputManager {
            this.padButtonDown(3); // Y button
   }
 
+  /** Transform button just pressed */
+  transformJustPressed(): boolean {
+    return Phaser.Input.Keyboard.JustDown(this.kL) ||
+           Phaser.Input.Keyboard.JustDown(this.kC) ||
+           this.padButtonJustDown(3); // Y button
+  }
+
   /** Transform button just released */
   transformJustReleased(): boolean {
     return Phaser.Input.Keyboard.JustUp(this.kL) ||

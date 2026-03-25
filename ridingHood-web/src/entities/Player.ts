@@ -86,10 +86,6 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   // Input
   private inputMgr!: InputManager;
 
-  // Transform long-press
-  private transformHoldTimer: number = 0;
-  private static readonly TRANSFORM_HOLD_MS = 800;
-
   constructor(scene: Phaser.Scene, x: number, y: number) {
     // Start with first idle frame
     super(scene, x, y, 'light_idle_blink_0');
@@ -443,22 +439,15 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  private handleTransformInput(delta: number): void {
-    if (this.inputMgr.transformHeld()) {
-      // Accumulate hold time
-      this.transformHoldTimer += delta;
-      if (this.transformHoldTimer >= Player.TRANSFORM_HOLD_MS) {
-        this.transformHoldTimer = 0;
-        if (this.form === 'light') {
-          if (this.darknessMeter >= DARKNESS_METER.TRANSFORM_THRESHOLD) {
-            this.transform('dark');
-          }
-        } else {
-          this.transform('light');
+  private handleTransformInput(_delta: number): void {
+    if (this.inputMgr.transformJustPressed()) {
+      if (this.form === 'light') {
+        if (this.darknessMeter >= DARKNESS_METER.TRANSFORM_THRESHOLD) {
+          this.transform('dark');
         }
+      } else {
+        this.transform('light');
       }
-    } else {
-      this.transformHoldTimer = 0;
     }
   }
 
